@@ -211,6 +211,103 @@
             overflow: hidden;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
         }
+
+        /* Testimonial carousel */
+        .testimonial-carousel {
+            position: relative;
+            overflow: hidden;
+        }
+        .testimonial-container {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+        .testimonial-slide {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+        .carousel-control:hover {
+            background-color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .carousel-control.prev {
+            left: 10px;
+        }
+        .carousel-control.next {
+            right: 10px;
+        }
+        .carousel-indicators {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .carousel-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .carousel-dot.active {
+            background-color: #330c59;
+        }
+        .testimonial-card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin: 0.5rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .testimonial-quote {
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .testimonial-quote::before {
+            content: """;
+            position: absolute;
+            left: 0;
+            top: -10px;
+            font-size: 3rem;
+            color: #e4c9e5;
+            font-family: serif;
+            line-height: 1;
+        }
+        
+        @media (min-width: 768px) {
+            .testimonial-slide {
+                flex: 0 0 50%;
+                max-width: 50%;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .testimonial-slide {
+                flex: 0 0 33.333333%;
+                max-width: 33.333333%;
+            }
+        }
     </style>
 </head>
 <body class="bg-white text-darkgray">
@@ -220,7 +317,7 @@
             <div class="flex justify-between h-16">
                 <div class="flex">
                     <div class="flex-shrink-0 flex items-center">
-                        <span class="text-violet text-2xl font-bold">La Ligne 13</span>
+                        <img src="../src/img/logo.jpg" alt="Logo Ligne 13" class="h-8 w-auto">
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
                         <a href="index.html" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
@@ -241,9 +338,11 @@
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <a href="contact.html" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet hover:bg-violet/90">
-                        Contactez-nous
-                    </a>
+                    <div class="hidden sm:flex sm:items-center">
+                        <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
+                            Contactez-nous
+                        </a>
+                    </div>
                     <div class="-mr-2 ml-4 flex items-center sm:hidden">
                         <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet" aria-controls="mobile-menu" aria-expanded="false">
                             <span class="sr-only">Ouvrir le menu</span>
@@ -461,6 +560,7 @@
                     
                     <g class="symbol">
                         <circle cx="325" cy="30" r="10" stroke="#330c59" stroke-width="2" fill="none" />
+                        <line x1="325" y1="40" x2="325" y2="  stroke-width="2" fill="none" />
                         <line x1="325" y1="40" x2="325" y2="60" stroke="#330c59" stroke-width="2" />
                         <line x1="315" y1="20" x2="335" y2="20" stroke="#330c59" stroke-width="2" />
                     </g>
@@ -476,6 +576,132 @@
                         <line x1="615" y1="20" x2="635" y2="20" stroke="#330c59" stroke-width="2" />
                     </g>
                 </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Testimonials Carousel -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    Ce qu'ils disent de nous
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Découvrez les témoignages de nos clients qui ont transformé leur environnement professionnel
+                </p>
+            </div>
+            
+            <div class="testimonial-carousel animate-hidden animate-element animate-delay-200">
+                <div class="testimonial-container">
+                    <!-- Testimonial 1 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="flex items-center mb-4">
+                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sophie Martin" class="w-12 h-12 rounded-full mr-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Sophie Martin</h4>
+                                    <p class="text-sm text-gray-600">Directrice RH, Capgemini</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-quote">
+                                <p class="text-gray-700">Les ateliers d'équité de La Ligne 13 ont transformé notre culture d'entreprise. Nos équipes communiquent mieux et nos talents féminins s'épanouissent davantage. Un vrai changement de paradigme !</p>
+                            </div>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 2 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="flex items-center mb-4">
+                                <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Thomas Dubois" class="w-12 h-12 rounded-full mr-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Thomas Dubois</h4>
+                                    <p class="text-sm text-gray-600">CTO, Tech Innovate</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-quote">
+                                <p class="text-gray-700">J'étais sceptique au début, mais le coaching en leadership a complètement changé ma façon de gérer mes équipes. Je comprends mieux les dynamiques de genre et mon équipe est plus performante.</p>
+                            </div>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star-half-alt text-jaune"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 3 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="flex items-center mb-4">
+                                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Émilie Rousseau" class="w-12 h-12 rounded-full mr-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Émilie Rousseau</h4>
+                                    <p class="text-sm text-gray-600">Développeuse Senior, Google</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-quote">
+                                <p class="text-gray-700">Les ateliers d'écriture m'ont permis de trouver ma voix et d'exprimer mes idées avec plus de confiance. J'ai depuis été promue et je dirige maintenant ma propre équipe. Merci La Ligne 13 !</p>
+                            </div>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Testimonial 4 -->
+                    <div class="testimonial-slide">
+                        <div class="testimonial-card">
+                            <div class="flex items-center mb-4">
+                                <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Nathalie Leroy" class="w-12 h-12 rounded-full mr-4">
+                                <div>
+                                    <h4 class="font-bold text-gray-800">Nathalie Leroy</h4>
+                                    <p class="text-sm text-gray-600">Product Manager, Orange</p>
+                                </div>
+                            </div>
+                            <div class="testimonial-quote">
+                                <p class="text-gray-700">Le programme complet de La Ligne 13 a été une révélation. J'ai gagné en assurance, en visibilité et en impact dans mon entreprise. Une expérience transformatrice que je recommande vivement.</p>
+                            </div>
+                            <div class="mt-4 flex">
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                                <i class="fas fa-star text-jaune"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Carousel Controls -->
+                <div class="carousel-control prev">
+                    <i class="fas fa-chevron-left text-violet"></i>
+                </div>
+                <div class="carousel-control next">
+                    <i class="fas fa-chevron-right text-violet"></i>
+                </div>
+                
+                <!-- Carousel Indicators -->
+                <div class="carousel-indicators">
+                    <div class="carousel-dot active"></div>
+                    <div class="carousel-dot"></div>
+                    <div class="carousel-dot"></div>
+                    <div class="carousel-dot"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -601,6 +827,82 @@
         document.querySelector('.play-button').addEventListener('click', function() {
             alert('Vidéo de présentation de La Ligne 13');
             // Ici vous pourriez remplacer par un code pour lancer une vidéo
+        });
+        
+        // Testimonial carousel
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.testimonial-container');
+            const slides = document.querySelectorAll('.testimonial-slide');
+            const prevBtn = document.querySelector('.carousel-control.prev');
+            const nextBtn = document.querySelector('.carousel-control.next');
+            const dots = document.querySelectorAll('.carousel-dot');
+            
+            let currentIndex = 0;
+            let slideWidth = 100;
+            let slidesToShow = 1;
+            
+            // Determine how many slides to show based on screen width
+            function updateSlidesToShow() {
+                if (window.innerWidth >= 1024) {
+                    slidesToShow = 3;
+                } else if (window.innerWidth >= 768) {
+                    slidesToShow = 2;
+                } else {
+                    slidesToShow = 1;
+                }
+                
+                // Update slide width
+                slideWidth = 100 / slidesToShow;
+                slides.forEach(slide => {
+                    slide.style.flex = `0 0 ${slideWidth}%`;
+                    slide.style.maxWidth = `${slideWidth}%`;
+                });
+                
+                // Move to current slide
+                goToSlide(currentIndex);
+            }
+            
+            function goToSlide(index) {
+                if (index < 0) {
+                    index = slides.length - slidesToShow;
+                } else if (index > slides.length - slidesToShow) {
+                    index = 0;
+                }
+                
+                currentIndex = index;
+                container.style.transform = `translateX(-${currentIndex * slideWidth}%)`;
+                
+                // Update dots
+                dots.forEach((dot, i) => {
+                    dot.classList.toggle('active', i === currentIndex);
+                });
+            }
+            
+            // Event listeners
+            prevBtn.addEventListener('click', () => {
+                goToSlide(currentIndex - 1);
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                goToSlide(currentIndex + 1);
+            });
+            
+            dots.forEach((dot, i) => {
+                dot.addEventListener('click', () => {
+                    goToSlide(i);
+                });
+            });
+            
+            // Handle window resize
+            window.addEventListener('resize', updateSlidesToShow);
+            
+            // Initialize
+            updateSlidesToShow();
+            
+            // Auto slide every 5 seconds
+            setInterval(() => {
+                goToSlide(currentIndex + 1);
+            }, 5000);
         });
     </script>
 </body>

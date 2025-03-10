@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>À propos - La Ligne 13</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        violet: '#330c59',
+                        jaune: '#ffeb5b',
+                        mauve: '#e4c9e5',
+                        rose: '#f9a8c9',
+                        lightgray: '#f5f5f5',
+                        darkgray: '#333333',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .hero-pattern {
+            background-color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            height: 70vh;
+            min-height: 500px;
+        }
+        .diagonal-line-left {
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background-color: #ffeb5b;
+            transform: rotate(15deg);
+            transform-origin: top left;
+        }
+        .diagonal-line-right {
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background-color: #f9a8c9;
+            transform: rotate(-15deg);
+            transform-origin: top right;
+        }
+        .curved-line-bottom {
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            border: 4px solid #ffeb5b;
+            border-top: none;
+            border-right: none;
+            border-radius: 0 0 0 300px;
+        }
+
+        /* Animation classes */
+        .animate-hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .animate-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .animate-delay-100 {
+            transition-delay: 0.1s;
+        }
+        .animate-delay-200 {
+            transition-delay: 0.2s;
+        }
+        .animate-delay-300 {
+            transition-delay: 0.3s;
+        }
+        .animate-delay-400 {
+            transition-delay: 0.4s;
+        }
+        .animate-delay-500 {
+            transition-delay: 0.5s;
+        }
+
+        /* Timeline animation */
+        .timeline-item {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 2rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background-color: #330c59;
+            opacity: 0;
+            transform: scaleY(0);
+            transform-origin: top;
+            transition: transform 1s ease, opacity 1s ease;
+        }
+        .timeline-item.animate-visible::before {
+            opacity: 1;
+            transform: scaleY(1);
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -8px;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #330c59;
+            opacity: 0;
+            transform: scale(0);
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            transition-delay: 0.5s;
+        }
+        .timeline-item.animate-visible .timeline-dot {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Team member card */
+        .team-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .team-social {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(51, 12, 89, 0.9);
+            display: flex;
+            justify-content: center;
+            padding: 0.75rem 0;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        .team-card:hover .team-social {
+            transform: translateY(0);
+        }
+
+        /* Value card animation */
+        .value-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .value-card:hover {
+            transform: translateY(-5px);
+        }
+        .value-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #330c59;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+        .value-card:hover::before {
+            transform: scaleX(1);
+        }
+        .value-icon {
+            transition: transform 0.3s ease;
+        }
+        .value-card:hover .value-icon {
+            transform: scale(1.2);
+        }
+
+        /* Counter animation */
+        .counter-value {
+            display: inline-block;
+            font-weight: bold;
+            font-size: 3rem;
+            color: #330c59;
+        }
+    </style>
+</head>
+<body class="bg-white text-darkgray">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <span class="text-violet text-2xl font-bold">La Ligne 13</span>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="index.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Accueil
+                        </a>
+                        <a href="ateliers.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Ateliers d'équité
+                        </a>
+                        <a href="coaching.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Coaching
+                        </a>
+                        <a href="ecriture.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Ateliers d'écriture
+                        </a>
+                        <a href="blog.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Blog
+                        </a>
+                        <a href="about.html" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            À propos
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <a href="contact.html" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-violet hover:bg-violet/90">
+                        Contactez-nous
+                    </a>
+                    <div class="-mr-2 ml-4 flex items-center sm:hidden">
+                        <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet" aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Ouvrir le menu</span>
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu, show/hide based on menu state. -->
+        <div class="sm:hidden hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="index.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Accueil
+                </a>
+                <a href="ateliers.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ateliers d'équité
+                </a>
+                <a href="coaching.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Coaching
+                </a>
+                <a href="ecriture.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ateliers d'écriture
+                </a>
+                <a href="blog.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Blog
+                </a>
+                <a href="about.html" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    À propos
+                </a>
+                <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Contact
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-pattern flex items-center">
+        <div class="diagonal-line-left"></div>
+        <div class="diagonal-line-right"></div>
+        <div class="curved-line-bottom"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold tracking-tight text-jaune sm:text-5xl md:text-6xl animate-hidden animate-element">
+                    <span class="block">Notre histoire</span>
+                    <span class="block text-white mt-2">Notre mission</span>
+                </h1>
+                <p class="mt-6 max-w-2xl mx-auto text-base text-gray-300 sm:text-lg md:text-xl animate-hidden animate-element animate-delay-100">
+                    Découvrez La Ligne 13, une entreprise engagée pour l'équité femmes-hommes dans la tech et au-delà.
+                    <br>Notre parcours, notre équipe, nos valeurs.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:grid lg:grid-cols-2 lg:gap-8 items-center">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                        Notre mission
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                        La Ligne 13 est née d'une conviction profonde : l'équité femmes-hommes est un enjeu majeur pour construire un monde professionnel plus juste et plus performant.
+                    </p>
+                    
+                    <div class="mt-6 text-gray-700 space-y-4 animate-hidden animate-element animate-delay-200">
+                        <p>
+                            Notre mission est double : transformer les mentalités dans les entreprises pour créer des environnements de travail plus équitables, et accompagner les femmes dans le développement de leur leadership pour qu'elles prennent toute leur place dans le monde professionnel.
+                        </p>
+                        <p>
+                            Nous intervenons particulièrement dans le secteur de la tech, où les inégalités restent marquées, mais notre approche s'adapte à tous les secteurs d'activité.
+                        </p>
+                        <p>
+                            À travers nos ateliers, nos programmes de coaching et nos interventions en entreprise, nous contribuons à construire un monde professionnel où chacun et chacune peut s'épanouir pleinement, indépendamment de son genre.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="mt-10 lg:mt-0 animate-hidden animate-element animate-delay-300">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2076&q=80" alt="Notre mission" class="rounded-lg shadow-xl">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="py-16 bg-lightgray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    La Ligne 13 en chiffres
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Notre impact depuis notre création
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-hidden animate-element">
+                    <div class="counter-value" data-target="5">0</div>
+                    <p class="text-gray-600 mt-2">années d'expérience</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-hidden animate-element animate-delay-100">
+                    <div class="counter-value" data-target="42">0</div>
+                    <p class="text-gray-600 mt-2">entreprises accompagnées</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-hidden animate-element animate-delay-200">
+                    <div class="counter-value" data-target="1500">0</div>
+                    <p class="text-gray-600 mt-2">personnes formées</p>
+                </div>
+                
+                <div class="bg-white p-6 rounded-lg shadow-md text-center animate-hidden animate-element animate-delay-300">
+                    <div class="counter-value" data-target="200">0</div>
+                    <p class="text-gray-600 mt-2">femmes coachées</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Section -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    Notre histoire
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Le parcours de La Ligne 13, de sa création à aujourd'hui
+                </p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item animate-hidden animate-element">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-bold text-violet mb-2">2018 - La naissance d'une idée</h3>
+                    <p class="text-gray-700 mb-4">
+                        Après 10 ans d'expérience dans le secteur de la tech, Audrey Rebout constate les inégalités persistantes entre femmes et hommes. Elle décide de mettre son expertise au service de l'équité et commence à développer une méthodologie innovante.
+                    </p>
+                </div>
+                
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item animate-hidden animate-element animate-delay-100">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-bold text-violet mb-2">2019 - Création de La Ligne 13</h3>
+                    <p class="text-gray-700 mb-4">
+                        La Ligne 13 voit officiellement le jour. Les premiers ateliers d'équité sont lancés dans plusieurs entreprises de la tech à Paris. Le succès est immédiat et les demandes se multiplient.
+                    </p>
+                </div>
+                
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item animate-hidden animate-element animate-delay-200">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-bold text-violet mb-2">2020 - Développement du coaching</h3>
+                    <p class="text-gray-700 mb-4">
+                        Face à la demande croissante d'accompagnement individuel, La Ligne 13 développe ses programmes de coaching en leadership féminin. L'équipe s'agrandit avec l'arrivée de deux nouvelles coachs certifiées.
+                    </p>
+                </div>
+                
+                <!-- Timeline Item 4 -->
+                <div class="timeline-item animate-hidden animate-element animate-delay-300">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-bold text-violet mb-2">2021 - Innovation avec les ateliers d'écriture</h3>
+                    <p class="text-gray-700 mb-4">
+                        La Ligne 13 innove en lançant ses ateliers d'écriture comme outil de développement personnel et professionnel. Cette approche originale rencontre un vif succès et devient rapidement un pilier de notre offre.
+                    </p>
+                </div>
+                
+                <!-- Timeline Item 5 -->
+                <div class="timeline-item animate-hidden animate-element animate-delay-400">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-bold text-violet mb-2">2022-2023 - Expansion nationale</h3>
+                    <p class="text-gray-700 mb-4">
+                        La Ligne 13 étend ses activités à l'échelle nationale, avec des interventions dans plusieurs grandes villes françaises. De nouveaux partenariats sont noués avec des entreprises de premier plan.
+                    </p>
+                </div>
+                
+                <!-- Timeline Item 6 -->
+                <div class="timeline-item animate-hidden animate-element animate-delay-500">
+                    <div class="timeline-dot"></div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Aujourd'hui - Vers l'international</h3>
+                    <p class="text-gray-700 mb-4">
+                        La Ligne 13 poursuit son développement avec l'ambition de porter ses valeurs et son expertise au-delà des frontières françaises. De nouveaux projets sont en cours pour renforcer notre impact et toucher un public toujours plus large.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Team Section -->
+    <div class="py-16 bg-lightgray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    Notre équipe
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Des expertes passionnées et engagées pour l'équité
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Team Member 1 -->
+                <div class="team-card bg-white rounded-lg shadow-xl overflow-hidden relative animate-hidden animate-element">
+                    <div class="h-64 bg-violet relative">
+                        <img src="https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Audrey Rebout" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-violet mb-1">Audrey Rebout</h3>
+                        <p class="text-gray-600 mb-4">Fondatrice & Directrice</p>
+                        <p class="text-gray-700">
+                            Experte en équité femmes-hommes et leadership féminin, Audrey a fondé La Ligne 13 après 10 ans d'expérience dans le secteur de la tech.
+                        </p>
+                    </div>
+                    <div class="team-social">
+                        <a href="https://www.linkedin.com/in/audrey-rebout-9144b7162/" class="text-white mx-2 hover:text-jaune">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="https://www.instagram.com/la_ligne_13.coaching/" class="text-white mx-2 hover:text-jaune">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 2 -->
+                <div class="team-card bg-white rounded-lg shadow-xl overflow-hidden relative animate-hidden animate-element animate-delay-100">
+                    <div class="h-64 bg-violet relative">
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sophie Martin" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-violet mb-1">Sophie Martin</h3>
+                        <p class="text-gray-600 mb-4">Coach & Facilitatrice</p>
+                        <p class="text-gray-700">
+                            Certifiée en coaching professionnel, Sophie accompagne les femmes dans le développement de leur leadership et anime nos ateliers d'équité.
+                        </p>
+                    </div>
+                    <div class="team-social">
+                        <a href="#" class="text-white mx-2 hover:text-jaune">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Team Member 3 -->
+                <div class="team-card bg-white rounded-lg shadow-xl overflow-hidden relative animate-hidden animate-element animate-delay-200">
+                    <div class="h-64 bg-violet relative">
+                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Émilie Rousseau" class="w-full h-full object-cover">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-violet mb-1">Émilie Rousseau</h3>
+                        <p class="text-gray-600 mb-4">Experte en écriture</p>
+                        <p class="text-gray-700">
+                            Auteure et coach en écriture, Émilie a développé notre méthodologie d'ateliers d'écriture comme outil de développement professionnel.
+                        </p>
+                    </div>
+                    <div class="team-social">
+                        <a href="#" class="text-white mx-2 hover:text-jaune">
+                            <i class="fab fa-linkedin"></i>
+                        </a>
+                        <a href="#" class="text-white mx-2 hover:text-jaune">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Values Section -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    Nos valeurs
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Les principes qui guident nos actions au quotidien
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                <!-- Value 1 -->
+                <div class="value-card bg-white p-6 rounded-lg shadow-md animate-hidden animate-element">
+                    <div class="value-icon bg-mauve/20 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-balance-scale text-violet text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Équité</h3>
+                    <p class="text-gray-700">
+                        Nous croyons en un monde professionnel où chacun et chacune a les mêmes opportunités de réussite et d'épanouissement, indépendamment de son genre.
+                    </p>
+                </div>
+                
+                <!-- Value 2 -->
+                <div class="value-card bg-white p-6 rounded-lg shadow-md animate-hidden animate-element animate-delay-100">
+                    <div class="value-icon bg-mauve/20 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-lightbulb text-violet text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Innovation</h3>
+                    <p class="text-gray-700">
+                        Nous développons constamment de nouvelles approches et méthodologies pour répondre aux défis de l'équité femmes-hommes dans le monde professionnel.
+                    </p>
+                </div>
+                
+                <!-- Value 3 -->
+                <div class="value-card bg-white p-6 rounded-lg shadow-md animate-hidden animate-element animate-delay-200">
+                    <div class="value-icon bg-mauve/20 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-hands-helping text-violet text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Bienveillance</h3>
+                    <p class="text-gray-700">
+                        Nous créons des espaces sécurisants où chacun et chacune peut s'exprimer librement, être écouté et accompagné avec respect et empathie.
+                    </p>
+                </div>
+                
+                <!-- Value 4 -->
+                <div class="value-card bg-white p-6 rounded-lg shadow-md animate-hidden animate-element animate-delay-300">
+                    <div class="value-icon bg-mauve/20 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-bullseye text-violet text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Impact</h3>
+                    <p class="text-gray-700">
+                        Nous visons des résultats concrets et mesurables dans la transformation des mentalités et des pratiques pour plus d'équité dans le monde professionnel.
+                    </p>
+                </div>
+                
+                <!-- Value 5 -->
+                <div class="value-card bg-white p-6 rounded-lg shadow-md animate-hidden animate-element animate-delay-400">
+                    <div class="value-icon bg-mauve/20 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-users text-violet text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Inclusion</h3>
+                    <p class="text-gray-700">
+                        Nous croyons en la richesse de la diversité sous toutes ses formes et œuvrons pour des environnements professionnels véritablement inclusifs.
+                    </p>
+                </div>
+                
+                <!-- Value 6 -->
+                <div class="value-card bg-white p-6 rounded-lg shadow-md animate-hidden animate-element animate-delay-500">
+                    <div class="value-icon bg-mauve/20 w-12 h-12 rounded-full flex items-center justify-center mb-4">
+                        <i class="fas fa-seedling text-violet text-xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-violet mb-2">Croissance</h3>
+                    <p class="text-gray-700">
+                        Nous accompagnons chaque personne dans son développement personnel et professionnel, avec la conviction que le potentiel de chacun est illimité.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Partners Section -->
+    <div class="py-16 bg-lightgray">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    Ils nous font confiance
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Nos partenaires et clients
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 items-center animate-hidden animate-element animate-delay-200">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Capgemini_Logo.svg/2560px-Capgemini_Logo.svg.png" alt="Capgemini" class="h-12 mx-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Logo_of_Orange_Bank.svg/2560px-Logo_of_Orange_Bank.svg.png" alt="Orange Bank" class="h-10 mx-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png" alt="Google" class="h-8 mx-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Amazon_logo.svg/2560px-Amazon_logo.svg.png" alt="Amazon" class="h-8 mx-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Sanofi_logo.svg/2560px-Sanofi_logo.svg.png" alt="Sanofi" class="h-8 mx-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Microsoft_logo_%282012%29.svg/2560px-Microsoft_logo_%282012%29.svg.png" alt="Microsoft" class="h-8 mx-auto grayscale opacity-70 hover:grayscale-0 hover:opacity-100 transition-all">
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-violet rounded-lg shadow-xl overflow-hidden lg:grid lg:grid-cols-2 lg:gap-4 animate-hidden animate-element">
+                <div class="pt-10 pb-12 px-6 sm:pt-16 sm:px-16 lg:py-16 lg:pr-0 xl:py-20 xl:px-20">
+                    <div class="lg:self-center">
+                        <h2 class="text-3xl font-extrabold text-jaune sm:text-4xl">
+                            <span class="block">Rejoignez l'aventure</span>
+                        </h2>
+                        <p class="mt-4 text-lg leading-6 text-mauve">
+                            Vous souhaitez en savoir plus sur La Ligne 13 ou discuter de vos besoins ? Contactez-nous dès aujourd'hui.
+                        </p>
+                        <div class="mt-8">
+                            <a href="contact.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-violet bg-jaune hover:bg-jaune/90 shadow-md">
+                                Contactez-nous
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative -mt-6 aspect-w-5 aspect-h-3 md:aspect-w-2 md:aspect-h-1">
+                    <img class="transform translate-x-6 translate-y-6 rounded-md object-cover object-left-top sm:translate-x-16 lg:translate-y-20" src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" alt="Contactez-nous">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-lightgray border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
+            <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
+                <div class="px-5 py-2">
+                    <a href="index.html" class="text-base text-gray-600 hover:text-violet">
+                        Accueil
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="ateliers.html" class="text-base text-gray-600 hover:text-violet">
+                        Ateliers d'équité
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="coaching.html" class="text-base text-gray-600 hover:text-violet">
+                        Coaching
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="ecriture.html" class="text-base text-gray-600 hover:text-violet">
+                        Ateliers d'écriture
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="blog.html" class="text-base text-gray-600 hover:text-violet">
+                        Blog
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="about.html" class="text-base text-gray-600 hover:text-violet">
+                        À propos
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="contact.html" class="text-base text-gray-600 hover:text-violet">
+                        Contact
+                    </a>
+                </div>
+            </nav>
+            <div class="mt-8 flex justify-center space-x-6">
+                <a href="https://www.linkedin.com/in/audrey-rebout-9144b7162/" class="text-gray-500 hover:text-violet">
+                    <span class="sr-only">LinkedIn</span>
+                    <i class="fab fa-linkedin text-xl"></i>
+                </a>
+                <a href="https://www.instagram.com/la_ligne_13.coaching/" class="text-gray-500 hover:text-violet">
+                    <span class="sr-only">Instagram</span>
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+            </div>
+            <p class="mt-8 text-center text-base text-gray-500">
+                &copy; 2025 La Ligne 13. Tous droits réservés.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Scroll animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial check for elements in viewport
+            checkVisibility();
+            
+            // Add scroll event listener
+            window.addEventListener('scroll', checkVisibility);
+            
+            function checkVisibility() {
+                const elements = document.querySelectorAll('.animate-hidden');
+                
+                elements.forEach(element => {
+                    if (isElementInViewport(element)) {
+                        element.classList.add('animate-visible');
+                    }
+                });
+            }
+            
+            function isElementInViewport(el) {
+                const rect = el.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 &&
+                    rect.bottom >= 0
+                );
+            }
+            
+            // Counter animation
+            const counters = document.querySelectorAll('.counter-value');
+            
+            counters.forEach(counter => {
+                const target = parseInt(counter.getAttribute('data-target'));
+                const duration = 2000; // ms
+                const step = target / (duration / 16); // 60fps
+                
+                let current = 0;
+                const updateCounter = () => {
+                    current += step;
+                    if (current < target) {
+                        counter.textContent = Math.floor(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                if (isElementInViewport(counter)) {
+                    updateCounter();
+                } else {
+                    const observer = new IntersectionObserver((entries) => {
+                        if (entries[0].isIntersecting) {
+                            updateCounter();
+                            observer.disconnect();
+                        }
+                    });
+                    observer.observe(counter);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
