@@ -1,11 +1,22 @@
 <?php
 
 require("../utils/ConnectToBDD.php");
+require("../utils/CheckPassword.php");
 
 if (empty($_POST["name"] || empty($_POST["firstname"]) || empty($_POST["birthday"]) || empty($_POST["job"]) || empty($_POST["email"]) || empty($_POST["phone"]) || empty($_POST["password"]) || empty($_POST("confirm_password")))) {
     die("Il manque une/des informations");
 } else if ($_POST["password"] != $_POST["confirm_password"]) {
     die("Les mots de passe ne correspondent pas");
+}
+
+
+
+$errors = [];
+
+
+if (!checkPassword($_POST["password"], $errors)) {
+    $errorMessage = implode(' ', $errors);
+    die($errorMessage);
 }
 
 $name = $_POST["name"];
