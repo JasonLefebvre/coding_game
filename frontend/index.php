@@ -1,4 +1,11 @@
 <?php
+session_start();
+require("../backend/utils/ConnectToBDD.php");
+
+$sql = "SELECT * FROM avis";
+$stmt = $pdo->prepare($sql);
+$stmt->execute();
+$avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -596,98 +603,45 @@
             </div>
             
             <div class="testimonial-carousel animate-hidden animate-element animate-delay-200">
-                <div class="testimonial-container">
-                    <!-- Testimonial 1 -->
-                    <div class="testimonial-slide">
-                        <div class="testimonial-card">
-                            <div class="flex items-center mb-4">
-                                <img src="https://randomuser.me/api/portraits/women/32.jpg" alt="Sophie Martin" class="w-12 h-12 rounded-full mr-4">
-                                <div>
-                                    <h4 class="font-bold text-gray-800">Sophie Martin</h4>
-                                    <p class="text-sm text-gray-600">Directrice RH, Capgemini</p>
-                                </div>
-                            </div>
-                            <div class="testimonial-quote">
-                                <p class="text-gray-700">Les ateliers d'équité de La Ligne 13 ont transformé notre culture d'entreprise. Nos équipes communiquent mieux et nos talents féminins s'épanouissent davantage. Un vrai changement de paradigme !</p>
-                            </div>
-                            <div class="mt-4 flex">
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                            </div>
-                        </div>
-                    </div>
+                
                     
-                    <!-- Testimonial 2 -->
-                    <div class="testimonial-slide">
-                        <div class="testimonial-card">
-                            <div class="flex items-center mb-4">
-                                <img src="https://randomuser.me/api/portraits/men/45.jpg" alt="Thomas Dubois" class="w-12 h-12 rounded-full mr-4">
-                                <div>
-                                    <h4 class="font-bold text-gray-800">Thomas Dubois</h4>
-                                    <p class="text-sm text-gray-600">CTO, Tech Innovate</p>
-                                </div>
-                            </div>
-                            <div class="testimonial-quote">
-                                <p class="text-gray-700">J'étais sceptique au début, mais le coaching en leadership a complètement changé ma façon de gérer mes équipes. Je comprends mieux les dynamiques de genre et mon équipe est plus performante.</p>
-                            </div>
-                            <div class="mt-4 flex">
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star-half-alt text-jaune"></i>
-                            </div>
+            <div class="testimonial-carousel">
+    <div class="testimonial-container">
+        <?php foreach ($avis as $avisItem): ?>
+            <div class="testimonial-slide">
+                <div class="testimonial-card">
+                    <div class="flex items-center mb-4">
+                        <img src="https://randomuser.me/api/portraits/men/<?php echo $avisItem['id_user']; ?>.jpg" alt="Utilisateur" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold text-gray-800">Utilisateur <?php echo $avisItem['id_user']; ?></h4>
+                            <p class="text-sm text-gray-600">Date: <?php echo date("d/m/Y", strtotime($avisItem['date_publication'])); ?></p>
                         </div>
                     </div>
+                    <div class="testimonial-quote">
+                        <p class="text-gray-700"><?php echo htmlspecialchars($avisItem['texte']); ?></p>
+                    </div>
+                    <div class="mt-4 flex">
+                        <?php
+                        $note = intval($avisItem['note']);
+                        for ($i = 1; $i <= 5; $i++) {
+                            if ($i <= $note) {
+                                echo '<i class="fas fa-star text-jaune"></i>';
+                            } else {
+                                echo '<i class="far fa-star text-jaune"></i>';
+                            }
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+</div>
+                   
                     
-                    <!-- Testimonial 3 -->
-                    <div class="testimonial-slide">
-                        <div class="testimonial-card">
-                            <div class="flex items-center mb-4">
-                                <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Émilie Rousseau" class="w-12 h-12 rounded-full mr-4">
-                                <div>
-                                    <h4 class="font-bold text-gray-800">Émilie Rousseau</h4>
-                                    <p class="text-sm text-gray-600">Développeuse Senior, Google</p>
-                                </div>
-                            </div>
-                            <div class="testimonial-quote">
-                                <p class="text-gray-700">Les ateliers d'écriture m'ont permis de trouver ma voix et d'exprimer mes idées avec plus de confiance. J'ai depuis été promue et je dirige maintenant ma propre équipe. Merci La Ligne 13 !</p>
-                            </div>
-                            <div class="mt-4 flex">
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                            </div>
-                        </div>
-                    </div>
                     
-                    <!-- Testimonial 4 -->
-                    <div class="testimonial-slide">
-                        <div class="testimonial-card">
-                            <div class="flex items-center mb-4">
-                                <img src="https://randomuser.me/api/portraits/women/22.jpg" alt="Nathalie Leroy" class="w-12 h-12 rounded-full mr-4">
-                                <div>
-                                    <h4 class="font-bold text-gray-800">Nathalie Leroy</h4>
-                                    <p class="text-sm text-gray-600">Product Manager, Orange</p>
-                                </div>
-                            </div>
-                            <div class="testimonial-quote">
-                                <p class="text-gray-700">Le programme complet de La Ligne 13 a été une révélation. J'ai gagné en assurance, en visibilité et en impact dans mon entreprise. Une expérience transformatrice que je recommande vivement.</p>
-                            </div>
-                            <div class="mt-4 flex">
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                                <i class="fas fa-star text-jaune"></i>
-                            </div>
-                        </div>
-                    </div>
+                    
+                   
                 </div>
                 
                 <!-- Carousel Controls -->
