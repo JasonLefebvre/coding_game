@@ -1,5 +1,9 @@
 <?php
 
+var_dump(getenv('DATABASE_URL'));
+
+echo "<br>";
+
 /**
  * Connexion à la base de données via PDO.
  *
@@ -9,9 +13,9 @@
 try {
     global $pdo;
     $pdo = new PDO(
-        $_ENV['DATABASE_URL'],
-        $_ENV['DATABASE_USER'],
-        $_ENV['DATABASE_PASSWORD'],
+        "mysql:host=100.83.27.15;dbname=coding_game;charset=UTF8",
+        "b2-info",
+        "1234",
         [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
