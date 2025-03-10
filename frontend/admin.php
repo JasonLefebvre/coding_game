@@ -146,6 +146,58 @@ session_start();
                 </div>
             </section>
 
+            <form action="../backend/blog/WritingWorkshopGenerator.php" method="post">
+                <div>
+                    <label for="titre">Titre</label>
+                    <input type="text" name="titre" required>
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <textarea name="description" required></textarea>
+                </div>
+                <div>
+                    <label for="date">Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div>
+                    <label for="date">Heure de début</label>
+                    <input type="datetime-local" name="start_time" required>
+                </div>
+                <div>
+                    <label for="date">Heure de fin</label>
+                    <input type="datetime-local" name="finish_time" required>
+                </div>
+                <button type="submit">Ajouter</button>
+            </form>
+
+            <form action="../backend/blog/EquityWorkshopGenerator.php" method="post">
+                <div>
+                    <label for="nom">Nom</label>
+                    <input type="text" name="name" required>
+                </div>
+                <div>
+                    <label for="description">Description</label>
+                    <textarea name="description" required></textarea>
+                </div>
+                <div>
+                    <label for="date">Date</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div>
+                    <label for="date">Heure de début</label>
+                    <input type="datetime-local" name="start_time" required>
+                </div>
+                <div>
+                    <label for="date">Heure de fin</label>
+                    <input type="datetime-local" name="finish_time" required>
+                </div>
+                <div>
+                    <label for="nom">Type</label>
+                    <input type="text" name="type" required>
+                </div>
+                <button type="submit">Ajouter</button>
+            </form>
+
             <!-- Section Rendez-vous -->
             <section id="rendezvous" class="mt-10">
                 <h3 class="text-2xl font-bold text-violet">Gestion des Rendez-vous</h3>
