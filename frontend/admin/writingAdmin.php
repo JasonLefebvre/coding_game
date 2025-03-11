@@ -22,6 +22,7 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+<<<<<<< Updated upstream
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration Ateliers d'Écriture - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -73,6 +74,20 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
+=======
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Atelier Ecriture - Admin</title>
+    <script>
+        function toggleEdit(postId) {
+            let inputs = document.querySelectorAll('#post-' + postId + ' .editable');
+            inputs.forEach(function(input) {
+                input.disabled = !input.disabled;
+            });
+        }
+    </script>
+>>>>>>> Stashed changes
 </head>
 <body class="bg-lightgray text-darkgray">
     <div class="flex min-h-screen">
@@ -277,6 +292,7 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
+<<<<<<< Updated upstream
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 max-w-md w-full">
@@ -367,5 +383,30 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         });
     </script>
+=======
+
+<div class="workshops">
+    <?php foreach ($workshops as $workshop): ?>
+        <div class="workshop">
+            <?php
+            $heure_debut = date("Y-m-d\TH:i", strtotime($workshop["heure_debut"]));
+            $heure_fin = date("Y-m-d\TH:i", strtotime($workshop["heure_fin"]));
+            ?>
+            <form action="../../backend/edit/EditWritingWorkshop.php" method="post" id="post-<?php echo $workshop['id']; ?>">
+                <input type="hidden" name="id" value="<?php echo $workshop['id']; ?>">
+                <input class="editable" name="titre" disabled value="<?php echo $workshop["titre"] ?>">
+                <input class="editable" name="description" disabled value="<?php echo $workshop["description"] ?>">
+                <input type="date" class="editable" disabled name="date" value="<?php echo $workshop["date"] ?>">
+                <input type="datetime-local" class="editable" disabled name="heure_debut" value="<?php echo $heure_debut ?>">
+                <input type="datetime-local" class="editable" disabled name="heure_fin" value="<?php echo $heure_fin ?>">
+                <input type="submit" class="editable" disabled value="envoyer">
+            </form>
+            <button onclick="toggleEdit(<?php echo $workshop["id"]?>)">Modifier</button>
+            <a href="../../backend/delete/DeleteWritingWorkshop.php?id=<?php echo $workshop["id"]; ?>">Supprimer</a>
+        </div>
+        <br>
+    <?php endforeach; ?>
+</div>
+>>>>>>> Stashed changes
 </body>
 </html>

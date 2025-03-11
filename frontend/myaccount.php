@@ -109,6 +109,7 @@ foreach ($sessions as $session) {
                         <img src="../src/img/logo.jpg" alt="Logo Ligne 13" class="h-8 w-auto">
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+<<<<<<< Updated upstream
                         <a href="index.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Accueil
                         </a>
@@ -127,6 +128,13 @@ foreach ($sessions as $session) {
                         <a href="about.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
                         </a>
+=======
+                        <a href="index.php" class="text-violet font-medium">Accueil</a>
+                        <a href="ateliers.html" class="text-gray-600 hover:text-violet">Ateliers d'équité</a>
+                        <a href="coaching.php" class="text-gray-600 hover:text-violet">Coaching</a>
+                        <a href="ecriture.html" class="text-gray-600 hover:text-violet">Ateliers d'écriture</a>
+                        <a href="blog.html" class="text-gray-600 hover:text-violet">Blog</a>
+>>>>>>> Stashed changes
                     </div>
                 </div>
                 <div class="flex items-center">

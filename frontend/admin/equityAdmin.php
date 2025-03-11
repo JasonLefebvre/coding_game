@@ -22,6 +22,7 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+<<<<<<< Updated upstream
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration Ateliers d'Équité - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -73,6 +74,20 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
+=======
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Atelier Equité - Admin</title>
+    <script>
+        function toggleEdit(postId) {
+            let inputs = document.querySelectorAll('#post-' + postId + ' .editable');
+            inputs.forEach(function(input) {
+                input.disabled = !input.disabled;
+            });
+        }
+    </script>
+>>>>>>> Stashed changes
 </head>
 <body class="bg-lightgray text-darkgray">
     <div class="flex min-h-screen">
@@ -156,6 +171,7 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </aside>
 
+<<<<<<< Updated upstream
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
             <div class="flex justify-between items-center mb-8">
@@ -388,5 +404,58 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         });
     </script>
+=======
+<form action="../../backend/generators/EquityWorkshopGenerator.php" method="post">
+    <div>
+        <label for="nom">Nom</label>
+        <input type="text" name="nom" required>
+    </div>
+    <div>
+        <label for="description">Description</label>
+        <textarea name="description" required></textarea>
+    </div>
+    <div>
+        <label for="date">Date</label>
+        <input type="date" name="date" required>
+    </div>
+    <div>
+        <label for="date">Heure de début</label>
+        <input type="datetime-local" name="start_time" required>
+    </div>
+    <div>
+        <label for="date">Heure de fin</label>
+        <input type="datetime-local" name="finish_time" required>
+    </div>
+    <div>
+        <label for="type">Type</label>
+        <input type="text" name="type" required>
+    </div>
+    <button type="submit">Ajouter</button>
+</form>
+
+<div class="workshops">
+    <?php foreach ($workshops as $workshop): ?>
+        <div class="workshop">
+            <?php
+            $heure_debut = date("Y-m-d\TH:i", strtotime($workshop["heure_debut"]));
+            $heure_fin = date("Y-m-d\TH:i", strtotime($workshop["heure_fin"]));
+            ?>
+            <form action="../../backend/edit/EditEquityWorkshop.php" method="post" id="post-<?php echo $workshop['id']; ?>">
+                <input type="hidden" name="id" value="<?php echo $workshop['id']; ?>">
+                <input class="editable" name="nom" disabled value="<?php echo $workshop["nom"] ?>">
+                <input class="editable" name="description" disabled value="<?php echo $workshop["description"] ?>">
+                <input type="date" class="editable" disabled name="date" value="<?php echo $workshop["date"] ?>">
+                <input type="datetime-local" class="editable" disabled name="heure_debut" value="<?php echo $heure_debut ?>">
+                <input type="datetime-local" class="editable" disabled name="heure_fin" value="<?php echo $heure_fin ?>">
+                <input class="editable" name="type" disabled value="<?php echo $workshop["type"] ?>">
+                <input type="submit" class="editable" disabled value="envoyer">
+            </form>
+            <button onclick="toggleEdit(<?php echo $workshop["id"]?>)">Modifier</button>
+            <a href="../../backend/delete/DeleteEquityWorkshop.php?id=<?php echo $workshop["id"]; ?>">Supprimer</a>
+        </div>
+        <br>
+    <?php endforeach; ?>
+</div>
+>>>>>>> Stashed changes
 </body>
 </html>

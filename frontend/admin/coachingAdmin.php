@@ -22,6 +22,7 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+<<<<<<< Updated upstream
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration Coaching - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -73,6 +74,20 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
+=======
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Coaching - Admin</title>
+    <script>
+        function toggleEdit(postId) {
+            let inputs = document.querySelectorAll('#post-' + postId + ' .editable');
+            inputs.forEach(function(input) {
+                input.disabled = !input.disabled;
+            });
+        }
+    </script>
+>>>>>>> Stashed changes
 </head>
 <body class="bg-lightgray text-darkgray">
     <div class="flex min-h-screen">
@@ -271,6 +286,7 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
+<<<<<<< Updated upstream
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 max-w-md w-full">
@@ -361,5 +377,26 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         });
     </script>
+=======
+<div class="coachings">
+    <?php foreach ($coachings as $coaching): ?>
+        <div class="coaching">
+            <form action="../../backend/edit/EditCoaching.php" method="post" id="post-<?php echo $coaching['id']; ?>">
+                <input type="hidden" name="post_id" value="<?php echo $coaching['id']; ?>">
+                <input class="editable" name="titre" disabled value="<?php echo $coaching["titre"] ?>">
+                <input class="editable" disabled name="description" value="<?php echo $coaching["description"] ?>">
+                <select name="categorie" class="editable" disabled>
+                    <option selected value="<?php echo $coaching["categorie"] ?>"><?php echo $coaching["categorie"] ?></option>
+                    <option value="<?php echo ($coaching["categorie"] == 'individuel') ? 'collectif' : 'Individuel';?>"><?php echo ($coaching["categorie"] == 'individuel') ? 'Collectif' : 'Individuel';?></option>
+                </select>
+                <input type="submit" class="editable" disabled value="envoyer">
+            </form>
+            <button onclick="toggleEdit(<?php echo $coaching["id"]?>)">Modifier</button>
+            <a href="../../backend/delete/DeleteCoaching.php?id=<?php echo $coaching["id"]; ?>">Supprimer</a>
+        </div>
+        <br>
+    <?php endforeach; ?>
+</div>
+>>>>>>> Stashed changes
 </body>
 </html>

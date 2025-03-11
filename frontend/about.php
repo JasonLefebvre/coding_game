@@ -673,7 +673,7 @@
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="coaching.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="coaching.php" class="text-base text-gray-600 hover:text-violet">
                         Coaching
                     </a>
                 </div>
