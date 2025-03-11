@@ -242,30 +242,41 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
                         <img src="../src/img/logo.jpg" alt="Logo Ligne 13" class="h-8 w-auto">
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="index.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="index.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Accueil
                         </a>
-                        <a href="ateliers.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="ateliers.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Ateliers d'équité
                         </a>
-                        <a href="coaching.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="coaching.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Coaching
                         </a>
-                        <a href="ecriture.html" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="ecriture.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Ateliers d'écriture
                         </a>
-                        <a href="blog.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
                         </a>
-                        <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="about.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center">
-                    <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
-                        Contactez-nous
-                    </a>
+                    <div class="hidden sm:flex sm:items-center">
+                        <a href="contact.php" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
+                            Contactez-nous
+                        </a>
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Mon compte
+                            </a>
+                        <?php else: ?>
+                            <a href="login.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Connexion
+                            </a>
+                        <?php endif; ?>
+                    </div>
                     <div class="-mr-2 ml-4 flex items-center sm:hidden">
                         <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet" aria-controls="mobile-menu" aria-expanded="false">
                             <span class="sr-only">Ouvrir le menu</span>
@@ -279,24 +290,37 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="sm:hidden hidden" id="mobile-menu">
             <div class="pt-2 pb-3 space-y-1">
-                <a href="index.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="index.php" class="">
                     Accueil
                 </a>
-                <a href="ateliers.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ateliers.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'équité
                 </a>
-                <a href="coaching.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="coaching.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Coaching
                 </a>
-                <a href="ecriture.html" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ecriture.php" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'écriture
                 </a>
-                <a href="blog.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
                 </a>
-                <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="about.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    À propos
+                </a>
+                <a href="contact.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Contact
                 </a>
+
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="myaccount.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Mon compte
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Connexion
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -405,55 +429,62 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
                 </p>
             </div>
             
-            <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Upcoming Workshops -->
-    <section class="max-w-7xl mx-auto px-6 py-12">
-        <h2 class="text-3xl font-bold text-violet text-center">Ateliers à venir</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
-            <?php if (!empty($ateliers_futurs)): ?>
-                <?php foreach ($ateliers_futurs as $atelier): ?>
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-                        <div class="p-6">
-                            <h3 class="text-2xl font-bold text-violet"><?= htmlspecialchars($atelier['titre']); ?></h3>
-                            <p class="text-gray-600 mt-2"><?= htmlspecialchars($atelier['description']); ?></p>
-                            <p class="mt-4 text-sm text-gray-500">
-                                📅 <?= date("d/m/Y", strtotime($atelier['date'])); ?> |
-                                🕒 <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?>
-                            </p>
-                            <div class="mt-6">
-                                <a href="reservation_ecriture.php?id=<?= htmlspecialchars($atelier['id']); ?>" class="inline-block bg-violet text-white px-5 py-2 rounded-lg hover:bg-violet-700">Réserver</a>
+            <!-- Upcoming Workshops -->
+            <div class="mb-16">
+                <h2 class="text-3xl font-bold text-violet text-center mb-8">Ateliers à venir</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <?php if (!empty($ateliers_futurs)): ?>
+                        <?php foreach ($ateliers_futurs as $atelier): ?>
+                            <div class="bg-white rounded-lg shadow-md overflow-hidden workshop-card animate-hidden animate-element">
+                                <div class="p-6">
+                                    <h3 class="text-2xl font-bold text-violet"><?= htmlspecialchars($atelier['titre']); ?></h3>
+                                    <p class="text-gray-600 mt-2"><?= htmlspecialchars($atelier['description']); ?></p>
+                                    <p class="mt-4 text-sm text-gray-500">
+                                        📅 <?= date("d/m/Y", strtotime($atelier['date'])); ?> |
+                                        🕒 <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?>
+                                    </p>
+                                    <div class="mt-6">
+                                        <a href="reservation_ecriture.php?id=<?= htmlspecialchars($atelier['id']); ?>" 
+                                           class="inline-block bg-violet text-white px-5 py-2 rounded-lg hover:bg-violet/90 transition-colors">
+                                            Réserver
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="col-span-full text-center text-gray-500">
+                            Aucun atelier à venir pour le moment.
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-gray-500 text-center">Aucun atelier à venir pour le moment.</p>
-            <?php endif; ?>
-        </div>
-    </section>
+                    <?php endif; ?>
+                </div>
+            </div>
 
-    <!-- Past Workshops -->
-    <section class="max-w-7xl mx-auto px-6 py-12">
-        <h2 class="text-3xl font-bold text-gray-700 text-center">Ateliers passés</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mt-6">
-            <?php if (!empty($ateliers_passes)): ?>
-                <?php foreach ($ateliers_passes as $atelier): ?>
-                    <div class="bg-gray-200 rounded-lg shadow-md overflow-hidden">
-                        <div class="p-6">
-                            <h3 class="text-xl font-bold text-gray-700"><?= htmlspecialchars($atelier['titre']); ?></h3>
-                            <p class="text-gray-600 mt-2"><?= htmlspecialchars($atelier['description']); ?></p>
-                            <p class="mt-4 text-sm text-gray-500">
-                                📅 <?= date("d/m/Y", strtotime($atelier['date'])); ?> |
-                                🕒 <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?>
-                            </p>
+            <!-- Past Workshops -->
+            <div>
+                <h2 class="text-3xl font-bold text-gray-700 text-center mb-8">Ateliers passés</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <?php if (!empty($ateliers_passes)): ?>
+                        <?php foreach ($ateliers_passes as $atelier): ?>
+                            <div class="bg-gray-50 rounded-lg shadow-md overflow-hidden workshop-card animate-hidden animate-element">
+                                <div class="p-6">
+                                    <h3 class="text-xl font-bold text-gray-700"><?= htmlspecialchars($atelier['titre']); ?></h3>
+                                    <p class="text-gray-600 mt-2"><?= htmlspecialchars($atelier['description']); ?></p>
+                                    <p class="mt-4 text-sm text-gray-500">
+                                        📅 <?= date("d/m/Y", strtotime($atelier['date'])); ?> |
+                                        🕒 <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?>
+                                    </p>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="col-span-full text-center text-gray-500">
+                            Aucun atelier passé disponible.
                         </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-gray-500 text-center">Aucun atelier passé disponible.</p>
-            <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
-    </section>
     </div>
 
     <!-- Testimonials Section -->

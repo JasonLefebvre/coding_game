@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * Connexion à la base de données via PDO.
  *

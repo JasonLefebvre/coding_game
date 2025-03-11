@@ -11,11 +11,11 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['
     // Pour le développement, nous ne redirigeons pas
 }
 
-// Récupérer tous les coachings
-$query = "SELECT * FROM coaching ORDER BY id DESC";
+// Récupérer tous les utilisateurs
+$query = "SELECT * FROM users ORDER BY id DESC";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
-$coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +23,7 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration Coaching - La Ligne 13</title>
+    <title>Administration Utilisateurs - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -64,11 +64,11 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             transition-delay: 0.2s;
         }
         
-        /* Coaching card styling */
-        .coaching-card {
+        /* User card styling */
+        .user-card {
             transition: all 0.3s ease;
         }
-        .coaching-card:hover {
+        .user-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
@@ -155,41 +155,52 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </a>
             </div>
         </aside>
-
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h1 class="text-3xl font-bold text-violet">Gestion du Coaching</h1>
-                    <p class="text-gray-600 mt-2">Créez, modifiez et supprimez les offres de coaching</p>
+                    <h1 class="text-3xl font-bold text-violet">Gestion des Utilisateurs</h1>
+                    <p class="text-gray-600 mt-2">Gérez les comptes utilisateurs et leurs permissions</p>
                 </div>
-                <button class="bg-violet text-white px-4 py-2 rounded-lg hover:bg-violet/90 transition-colors flex items-center" id="newCoachingBtn">
+                <button class="bg-violet text-white px-4 py-2 rounded-lg hover:bg-violet/90 transition-colors flex items-center" id="newUserBtn">
                     <i class="fas fa-plus mr-2"></i>
-                    Nouvelle offre
+                    Nouvel utilisateur
                 </button>
             </div>
             
-            <!-- New Coaching Form (Hidden by default) -->
-            <div id="newCoachingForm" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden animate-hidden">
-                <h2 class="text-xl font-bold text-violet mb-4">Créer une nouvelle offre de coaching</h2>
+            <!-- New User Form (Hidden by default) -->
+            <div id="newUserForm" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden animate-hidden">
+                <h2 class="text-xl font-bold text-violet mb-4">Créer un nouvel utilisateur</h2>
                 
-                <form action="../../backend/generators/CoachingGenerator.php" method="post" class="space-y-4">
-                    <div>
-                        <label for="titre" class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
-                        <input type="text" id="titre" name="titre" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                <form action="../../backend/generators/UserGenerator.php" method="post" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                            <input type="text" id="nom" name="nom" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                        </div>
+                        
+                        <div>
+                            <label for="prenom" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                            <input type="text" id="prenom" name="prenom" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                        </div>
                     </div>
                     
                     <div>
-                        <label for="categorie" class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
-                        <select id="categorie" name="categorie" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
-                            <option value="individuel">Individuel</option>
-                            <option value="collectif">Collectif</option>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" id="password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+                        <select id="role" name="role" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                            <option value="user">Utilisateur</option>
+                            <option value="admin">Administrateur</option>
                         </select>
-                    </div>
-                    
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea id="description" name="description" rows="6" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent"></textarea>
                     </div>
                     
                     <div class="flex justify-end space-x-3">
@@ -207,15 +218,15 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="bg-white rounded-lg shadow-md p-4 mb-8 animate-hidden animate-element">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="relative flex-1">
-                        <input type="text" placeholder="Rechercher une offre..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                        <input type="text" placeholder="Rechercher un utilisateur..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                     
                     <div class="flex items-center space-x-4">
                         <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
-                            <option value="">Toutes les catégories</option>
-                            <option value="individuel">Individuel</option>
-                            <option value="collectif">Collectif</option>
+                            <option value="">Tous les rôles</option>
+                            <option value="admin">Administrateur</option>
+                            <option value="user">Utilisateur</option>
                         </select>
                         
                         <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
@@ -226,46 +237,78 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             
-            <!-- Coaching List -->
+            <!-- Users List -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php if (empty($coachings)): ?>
+                <?php if (empty($users)): ?>
                     <div class="col-span-3 text-center py-8">
-                        <p class="text-gray-500">Aucune offre de coaching trouvée. Créez votre première offre !</p>
+                        <p class="text-gray-500">Aucun utilisateur trouvé. Créez votre premier utilisateur !</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($coachings as $index => $coaching): ?>
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden coaching-card animate-hidden animate-element <?= $index % 2 ? 'animate-delay-100' : ''; ?>">
-                            <div class="h-24 bg-rose relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <h3 class="text-xl font-bold text-white text-center px-4"><?= htmlspecialchars($coaching['titre']); ?></h3>
-                                </div>
+                    <!-- User Card 1 -->
+                    <div class="bg-white p-4 rounded-lg border hover:shadow-lg transition-shadow user-card animate-hidden animate-element">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-violet rounded-full flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
                             </div>
-                            <div class="p-4">
-                                <div class="mb-2">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-mauve text-violet">
-                                        <?= ucfirst(htmlspecialchars($coaching['categorie'])); ?>
-                                    </span>
-                                </div>
-                                <p class="text-gray-700 mb-4 line-clamp-3">
-                                    <?= htmlspecialchars(substr($coaching['description'], 0, 150)) . (strlen($coaching['description']) > 150 ? '...' : ''); ?>
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <a href="../coaching.php" class="text-violet hover:text-violet/80 transition-colors" target="_blank">
-                                        <i class="fas fa-eye mr-1"></i>
-                                        Voir
-                                    </a>
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-800 transition-colors edit-coaching" data-id="<?= $coaching['id']; ?>">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-800 transition-colors delete-coaching" data-id="<?= $coaching['id']; ?>">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-violet">Jean Dupont</h4>
+                                <p class="text-sm text-gray-600">Admin</p>
+                                <p class="text-xs text-gray-500">Inscrit le 01/03/2024</p>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <button class="text-blue-600 hover:text-blue-800 edit-user" data-id="1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+
+                    <!-- User Card 2 -->
+                    <div class="bg-white p-4 rounded-lg border hover:shadow-lg transition-shadow user-card animate-hidden animate-element animate-delay-100">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-mauve rounded-full flex items-center justify-center text-violet">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-violet">Marie Curie</h4>
+                                <p class="text-sm text-gray-600">Utilisateur</p>
+                                <p class="text-xs text-gray-500">Inscrit le 28/02/2024</p>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <button class="text-blue-600 hover:text-blue-800 edit-user" data-id="2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="2">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Card 3 -->
+                    <div class="bg-white p-4 rounded-lg border hover:shadow-lg transition-shadow user-card animate-hidden animate-element animate-delay-200">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-rose rounded-full flex items-center justify-center text-violet">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-violet">Albert Einstein</h4>
+                                <p class="text-sm text-gray-600">Utilisateur</p>
+                                <p class="text-xs text-gray-500">Inscrit le 25/02/2024</p>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <button class="text-blue-600 hover:text-blue-800 edit-user" data-id="3">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="3">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
             </div>
         </main>
@@ -275,7 +318,7 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 max-w-md w-full">
             <h3 class="text-xl font-bold text-violet mb-4">Confirmer la suppression</h3>
-            <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer cette offre de coaching ? Cette action est irréversible.</p>
+            <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.</p>
             <div class="flex justify-end space-x-3">
                 <button id="cancelDelete" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
                     Annuler
@@ -314,48 +357,48 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 );
             }
             
-            // New Coaching Form Toggle
-            const newCoachingBtn = document.getElementById('newCoachingBtn');
-            const newCoachingForm = document.getElementById('newCoachingForm');
+            // New User Form Toggle
+            const newUserBtn = document.getElementById('newUserBtn');
+            const newUserForm = document.getElementById('newUserForm');
             const cancelBtn = document.getElementById('cancelBtn');
             
-            newCoachingBtn.addEventListener('click', function() {
-                newCoachingForm.classList.remove('hidden');
-                newCoachingForm.classList.add('animate-visible');
-                newCoachingBtn.classList.add('hidden');
+            newUserBtn.addEventListener('click', function() {
+                newUserForm.classList.remove('hidden');
+                newUserForm.classList.add('animate-visible');
+                newUserBtn.classList.add('hidden');
             });
             
             cancelBtn.addEventListener('click', function() {
-                newCoachingForm.classList.add('hidden');
-                newCoachingForm.classList.remove('animate-visible');
-                newCoachingBtn.classList.remove('hidden');
+                newUserForm.classList.add('hidden');
+                newUserForm.classList.remove('animate-visible');
+                newUserBtn.classList.remove('hidden');
             });
             
             // Delete Modal
             const deleteModal = document.getElementById('deleteModal');
-            const deleteButtons = document.querySelectorAll('.delete-coaching');
+            const deleteButtons = document.querySelectorAll('.delete-user');
             const cancelDelete = document.getElementById('cancelDelete');
             const confirmDelete = document.getElementById('confirmDelete');
-            let coachingIdToDelete = null;
+            let userIdToDelete = null;
             
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    coachingIdToDelete = this.getAttribute('data-id');
+                    userIdToDelete = this.getAttribute('data-id');
                     deleteModal.classList.remove('hidden');
                 });
             });
             
             cancelDelete.addEventListener('click', function() {
                 deleteModal.classList.add('hidden');
-                coachingIdToDelete = null;
+                userIdToDelete = null;
             });
             
             confirmDelete.addEventListener('click', function() {
-                if (coachingIdToDelete) {
+                if (userIdToDelete) {
                     // Send delete request to server
                     // For now, just close the modal
                     deleteModal.classList.add('hidden');
-                    alert('Offre de coaching supprimée avec succès !');
+                    alert('Utilisateur supprimé avec succès !');
                     // Reload the page or remove the element from DOM
                 }
             });
