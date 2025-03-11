@@ -1,21 +1,32 @@
 <?php
+session_start(); // Démarrer la session pour récupérer l'utilisateur connecté
 require("../backend/utils/ConnectToBDD.php");
 require("../libs/fpdf.php"); // Inclure FPDF
+
+// Activer le mode debug pour voir les erreurs
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
 if (!$pdo) {
     die("Erreur de connexion à la base de données");
 }
 
-// Vérification des paramètres
+// ✅ Vérifier si l'utilisateur est bien connecté
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    die("❌ Erreur : utilisateur non connecté. Vérifiez votre connexion.");
+}
+
+$user_id = $_SESSION['user_id']; // Récupération de l'ID utilisateur connecté
+
+// ✅ Vérification des paramètres GET
 if (!isset($_GET['payment_id']) || !isset($_GET['id'])) {
     die("Paiement non validé.");
 }
 
-$atelier_id = $_GET['id'];
-$id_user = 1; // Remplacez par l'ID réel de l'utilisateur (ex: via $_SESSION)
-$payment_id = $_GET['payment_id']; // ID du paiement
+$atelier_id = (int) $_GET['id'];
+$payment_id = htmlspecialchars($_GET['payment_id']); // ID du paiement
 
-// Récupération des détails de l'atelier
+// ✅ Récupération des détails de l'atelier
 $query = "SELECT titre, description, date, heure_debut, heure_fin FROM atelier_ecriture WHERE id = :id";
 $stmt = $pdo->prepare($query);
 $stmt->bindParam(':id', $atelier_id, PDO::PARAM_INT);
@@ -26,10 +37,10 @@ if (!$atelier) {
     die("Atelier introuvable.");
 }
 
-// Enregistrer l'historique de paiement
+// ✅ Enregistrement de l'historique de paiement dans `history_user`
 $query = "INSERT INTO history_user (id_user, id_event, event_type) VALUES (:id_user, :id_event, 'atelier_ecriture')";
 $stmt = $pdo->prepare($query);
-$stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$stmt->bindParam(':id_user', $user_id, PDO::PARAM_INT);
 $stmt->bindParam(':id_event', $atelier_id, PDO::PARAM_INT);
 $stmt->execute();
 
@@ -38,29 +49,34 @@ if (!is_dir("invoices")) {
     mkdir("invoices", 0777, true);
 }
 
-// Génération du fichier PDF avec FPDF
+// ✅ Génération du fichier PDF avec FPDF
 $pdf = new FPDF();
 $pdf->AddPage();
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->Cell(0, 10, "Facture de reservation", 0, 1, 'C');
 
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 10, "Atelier : " . utf8_decode($atelier['titre']), 0, 1);
+$pdf->Cell(0, 10, "Atelier : " . mb_convert_encoding($atelier['titre'], "ISO-8859-1", "UTF-8"), 0, 1);
 $pdf->Cell(0, 10, "Date : " . date("d/m/Y", strtotime($atelier['date'])), 0, 1);
 $pdf->Cell(0, 10, "Heure : " . date("H:i", strtotime($atelier['heure_debut'])) . " - " . date("H:i", strtotime($atelier['heure_fin'])), 0, 1);
 $pdf->Cell(0, 10, "Prix : 50,00€", 0, 1);
 $pdf->Cell(0, 10, "Paiement ID : " . $payment_id, 0, 1);
 
-// Sauvegarde du PDF
+// ✅ Sauvegarde du PDF
 $filename = "facture_" . $payment_id . ".pdf";
 $filepath = "invoices/" . $filename;
-$pdf->Output($filepath, "F"); // Enregistre dans "invoices/"
+$pdf->Output($filepath, "F");
+
+// ✅ Vérifier que le fichier PDF a bien été créé
+if (!file_exists($filepath)) {
+    die("❌ Erreur : le fichier PDF n'a pas été généré.");
+}
 
 // ✅ Insérer le chemin du PDF dans la base de données
 $query = "UPDATE history_user SET path_pdf = :path_pdf WHERE id_user = :id_user AND id_event = :id_event";
 $stmt = $pdo->prepare($query);
 $stmt->bindParam(':path_pdf', $filepath, PDO::PARAM_STR);
-$stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
+$stmt->bindParam(':id_user', $user_id, PDO::PARAM_INT);
 $stmt->bindParam(':id_event', $atelier_id, PDO::PARAM_INT);
 $stmt->execute();
 
@@ -79,7 +95,7 @@ $stmt->execute();
         <p class="text-gray-700 mt-2">Votre réservation pour <strong><?= htmlspecialchars($atelier['titre']); ?></strong> a été confirmée.</p>
 
         <div class="mt-6">
-            <a href="<?= $filepath; ?>" download class="px-6 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-700">
+            <a href="<?= htmlspecialchars($filepath); ?>" download class="px-6 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-700">
                 📄 Télécharger ma facture
             </a>
             <a href="index.php" class="ml-4 px-6 py-2 bg-gray-500 text-white rounded-lg shadow hover:bg-gray-700">

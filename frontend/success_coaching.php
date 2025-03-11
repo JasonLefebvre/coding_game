@@ -11,10 +11,6 @@ if (!$pdo) {
     die("Erreur de connexion à la base de données");
 }
 
-// ✅ Vérifier si l'utilisateur est bien connecté
-if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
-    die("❌ Erreur : utilisateur non connecté. Vérifiez votre connexion.");
-}
 
 $user_id = $_SESSION['user_id']; // Récupération de l'ID utilisateur connecté
 
