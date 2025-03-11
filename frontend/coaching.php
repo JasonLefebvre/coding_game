@@ -1,3 +1,24 @@
+<?php
+require("../backend/utils/ConnectToBDD.php");
+
+if (!$pdo) {
+    die("Erreur de connexion à la base de données");
+}
+
+// Obtenir la date actuelle
+$today = date("Y-m-d");
+
+// Récupérer uniquement les coaching à venir
+$query_future = "SELECT id, titre, description, categorie 
+                 FROM coaching";
+
+                 $stmt_future = $pdo->query($query_future);
+                 $coachings_futurs = $stmt_future->fetchAll(PDO::FETCH_ASSOC);
+                 
+                 
+                
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -381,117 +402,27 @@
             </div>
             
             <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-                <!-- Program 1 -->
-                <div class="bg-white rounded-lg shadow-xl overflow-hidden coaching-card animate-hidden animate-element">
-                    <div class="h-48 bg-violet relative">
-                        <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Coaching Découverte" class="w-full h-full object-cover opacity-70">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <h3 class="text-2xl font-bold text-white">Découverte</h3>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <p class="text-gray-600 mb-4">
-                            <span class="font-bold">Durée :</span> 3 mois (6 séances)
-                        </p>
-                        <p class="text-gray-700 mb-6">
-                            Un programme court pour explorer votre potentiel et identifier vos axes de développement. Idéal pour débuter votre parcours de leadership.
-                        </p>
-                        <ul class="text-gray-600 mb-6 space-y-2">
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Bilan de compétences
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Identification des freins
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Plan d'action personnalisé
-                            </li>
-                        </ul>
-                        <div class="mt-6">
-                            <a href="contact.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
-                                Réserver ce programme
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Program 2 -->
-                <div class="bg-white rounded-lg shadow-xl overflow-hidden coaching-card animate-hidden animate-element animate-delay-100">
-                    <div class="h-48 bg-violet relative">
-                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80" alt="Coaching Transformation" class="w-full h-full object-cover opacity-70">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <h3 class="text-2xl font-bold text-white">Transformation</h3>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <p class="text-gray-600 mb-4">
-                            <span class="font-bold">Durée :</span> 6 mois (12 séances)
-                        </p>
-                        <p class="text-gray-700 mb-6">
-                            Un programme complet pour transformer en profondeur votre leadership et développer pleinement votre potentiel. Notre programme le plus populaire.
-                        </p>
-                        <ul class="text-gray-600 mb-6 space-y-2">
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Développement de la confiance
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Affirmation de soi
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Stratégie de carrière
-                            </li>
-                        </ul>
-                        <div class="mt-6">
-                            <a href="contact.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
-                                Réserver ce programme
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Program 3 -->
-                <div class="bg-white rounded-lg shadow-xl overflow-hidden coaching-card animate-hidden animate-element animate-delay-200">
-                    <div class="h-48 bg-violet relative">
-                        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" alt="Coaching Excellence" class="w-full h-full object-cover opacity-70">
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <h3 class="text-2xl font-bold text-white">Excellence</h3>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <p class="text-gray-600 mb-4">
-                            <span class="font-bold">Durée :</span> 12 mois (24 séances)
-                        </p>
-                        <p class="text-gray-700 mb-6">
-                            Un programme d'excellence pour les femmes dirigeantes ou aspirant à des postes de direction. Un accompagnement sur-mesure pour atteindre les sommets.
-                        </p>
-                        <ul class="text-gray-600 mb-6 space-y-2">
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Leadership stratégique
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Influence et impact
-                            </li>
-                            <li class="flex items-center">
-                                <i class="fas fa-check text-violet mr-2"></i>
-                                Équilibre vie pro/perso
-                            </li>
-                        </ul>
-                        <div class="mt-6">
-                            <a href="contact.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
-                                Réserver ce programme
-                            </a>
-                        </div>
-                    </div>
+    <?php foreach ($coachings_futurs as $coaching) : ?>
+        <div class="bg-white rounded-lg shadow-xl overflow-hidden coaching-card animate-hidden animate-element">
+            <div class="p-6">
+                <h3 class="text-2xl font-bold text-violet"><?php echo htmlspecialchars($coaching['titre']); ?></h3>
+                <p class="text-gray-600 mb-4">
+                    <span class="font-bold">Catégorie :</span> <?php echo htmlspecialchars($coaching['categorie']); ?>
+                </p>
+                <p class="text-gray-700 mb-6">
+                    <?php echo nl2br(htmlspecialchars($coaching['description'])); ?>
+                </p>
+                <div class="mt-6">
+                    <a href="reservation_coaching.php?id=<?php echo $coaching['id']; ?>" 
+                       class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
+                        Voir plus
+                    </a>
                 </div>
             </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+
         </div>
     </div>
 

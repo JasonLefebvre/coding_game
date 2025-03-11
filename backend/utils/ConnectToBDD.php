@@ -1,6 +1,5 @@
 <?php
 
-echo "<br>";
 
 /**
  * Connexion à la base de données via PDO.
