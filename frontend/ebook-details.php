@@ -1,123 +1,57 @@
 <?php
-require("../backend/utils/ConnectToBDD.php");
-require("../libs/fpdf.php"); // Inclure FPDF
 session_start();
+require("../backend/utils/ConnectToBDD.php");
+require '../stripe/init.php'; // Adjust path if needed
 
-if (!$pdo) {
-    die("Erreur de connexion à la base de données");
+// Vérifier l'ID de l'ebook
+if (!isset($_GET['id']) || !is_numeric($_GET['id']) || empty($_GET['id'])) {
+    header('Location: ebooks.php');
+    exit;
 }
 
-// Vérification des paramètres
-if (!isset($_GET['payment_id']) || !isset($_GET['id'])) {
-    die("Paiement non validé.");
-}
+$ebook_id = (int) $_GET['id'];
 
-$atelier_id = $_GET['id'];
-$id_user = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1; // Utiliser l'ID de session si disponible
-$payment_id = $_GET['payment_id']; // ID du paiement
-
-// Récupération des détails de l'atelier
-$query = "SELECT titre, description, date, heure_debut, heure_fin FROM atelier_ecriture WHERE id = :id";
+// Récupérer les détails de l'ebook
+$query = "SELECT * FROM ebooks WHERE id = :id AND is_active = 1";
 $stmt = $pdo->prepare($query);
-$stmt->bindParam(':id', $atelier_id, PDO::PARAM_INT);
+$stmt->bindParam(':id', $ebook_id, PDO::PARAM_INT);
 $stmt->execute();
-$atelier = $stmt->fetch(PDO::FETCH_ASSOC);
+$ebook = $stmt->fetch(PDO::FETCH_ASSOC);
 
-if (!$atelier) {
-    die("Atelier introuvable.");
+if (!$ebook) {
+    header('Location: ebooks.php');
+    exit;
 }
 
-// Prix de l'atelier
-$prix = 50.00;
-
-// Obtenir la date actuelle
-$date_validation = date('Y-m-d');
-
-// Enregistrer l'historique de paiement
-$query = "INSERT INTO history_user (id_user, id_event, event_type, date, prix) VALUES (:id_user, :id_event, 'atelier_ecriture', :date, :prix)";
-$stmt = $pdo->prepare($query);
-$stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
-$stmt->bindParam(':id_event', $atelier_id, PDO::PARAM_INT);
-$stmt->bindParam(':date', $date_validation, PDO::PARAM_STR);
-$stmt->bindParam(':prix', $prix, PDO::PARAM_STR);
-$stmt->execute();
-
-// Vérifier si le dossier "invoices" existe, sinon le créer
-if (!is_dir("invoices")) {
-    mkdir("invoices", 0777, true);
+// Vérifier si l'utilisateur a déjà acheté cet ebook
+$hasAlreadyPurchased = false;
+if (isset($_SESSION['user_id'])) {
+    $query = "SELECT id FROM ebooks_achats WHERE id_user = :id_user AND id_ebook = :id_ebook";
+    $stmt = $pdo->prepare($query);
+    $stmt->bindParam(':id_user', $_SESSION['user_id'], PDO::PARAM_INT);
+    $stmt->bindParam(':id_ebook', $ebook_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $hasAlreadyPurchased = $stmt->rowCount() > 0;
 }
 
-// Génération du fichier PDF avec FPDF
-$pdf = new FPDF();
-$pdf->AddPage();
+// Stripe API Key (Replace with your own)
+\Stripe\Stripe::setApiKey('sk_test_51Q98K001jgFsFXMETPpgvXUboCcKrzpoL1WXF6cnIKt5MGkTvrLB9uI39ziCnt9rNUxB54DYCzWMAOGXyxwP2c2X00yLr8oWTz');
 
-// En-tête du PDF
-$pdf->SetFillColor(51, 12, 89); // Couleur violet de La Ligne 13
-$pdf->Rect(0, 0, 210, 40, 'F');
-$pdf->SetTextColor(255, 255, 255);
-$pdf->SetFont('Arial', 'B', 24);
-$pdf->Cell(0, 20, utf8_decode("FACTURE"), 0, 1, 'C');
-$pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 10, utf8_decode("La Ligne 13 - Coaching & Ateliers"), 0, 1, 'C');
+// Convert price to cents for Stripe
+$price_in_cents = (int)($ebook['prix'] * 100);
 
-// Informations de la facture
-$pdf->SetTextColor(0, 0, 0);
-$pdf->SetY(50);
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(0, 10, utf8_decode("Facture N° " . $payment_id), 0, 1);
-$pdf->SetFont('Arial', '', 10);
-$pdf->Cell(0, 7, utf8_decode("Date d'émission : " . date("d/m/Y")), 0, 1);
-$pdf->Cell(0, 7, utf8_decode("Client : " . (isset($_SESSION['nom']) ? $_SESSION['prenom'] . ' ' . $_SESSION['nom'] : 'Client #' . $id_user)), 0, 1);
-$pdf->Ln(10);
+// Create a Payment Intent for Stripe
+$payment_intent = \Stripe\PaymentIntent::create([
+    'amount' => $price_in_cents,
+    'currency' => 'eur',
+    'payment_method_types' => ['card'],
+    'metadata' => [
+        'ebook_id' => $ebook_id,
+        'ebook_title' => $ebook['titre']
+    ],
+]);
 
-// Détails de la prestation
-$pdf->SetFillColor(240, 240, 240);
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->Cell(90, 10, utf8_decode("Description"), 1, 0, 'C', true);
-$pdf->Cell(30, 10, utf8_decode("Date"), 1, 0, 'C', true);
-$pdf->Cell(30, 10, utf8_decode("Horaire"), 1, 0, 'C', true);
-$pdf->Cell(40, 10, utf8_decode("Montant"), 1, 1, 'C', true);
-
-$pdf->SetFont('Arial', '', 10);
-$pdf->Cell(90, 10, utf8_decode($atelier['titre']), 1, 0, 'L');
-$pdf->Cell(30, 10, date("d/m/Y", strtotime($atelier['date'])), 1, 0, 'C');
-$pdf->Cell(30, 10, date("H:i", strtotime($atelier['heure_debut'])) . ' - ' . date("H:i", strtotime($atelier['heure_fin'])), 1, 0, 'C');
-$pdf->Cell(40, 10, number_format($prix, 2, ',', ' ') . " EUR", 1, 1, 'R');
-
-// Total
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->Cell(150, 10, utf8_decode("Total"), 1, 0, 'R', true);
-$pdf->Cell(40, 10, number_format($prix, 2, ',', ' ') . " EUR", 1, 1, 'R', true);
-
-// Informations de paiement
-$pdf->Ln(10);
-$pdf->SetFont('Arial', 'B', 10);
-$pdf->Cell(0, 10, utf8_decode("Informations de paiement"), 0, 1);
-$pdf->SetFont('Arial', '', 10);
-$pdf->Cell(0, 7, utf8_decode("Méthode de paiement : Carte bancaire"), 0, 1);
-$pdf->Cell(0, 7, utf8_decode("Référence de transaction : " . $payment_id), 0, 1);
-$pdf->Cell(0, 7, utf8_decode("Statut : Payé"), 0, 1);
-
-// Pied de page
-$pdf->SetY(-40);
-$pdf->SetFont('Arial', 'I', 8);
-$pdf->Cell(0, 10, utf8_decode("La Ligne 13 - SIRET : 123 456 789 00012"), 0, 1, 'C');
-$pdf->Cell(0, 5, utf8_decode("13 Rue de l'Exemple, 75000 Paris"), 0, 1, 'C');
-$pdf->Cell(0, 5, utf8_decode("Email : contact@laligne13.fr - Tél : 01 23 45 67 89"), 0, 1, 'C');
-$pdf->Cell(0, 5, utf8_decode("Merci pour votre confiance !"), 0, 1, 'C');
-
-// Sauvegarde du PDF
-$filename = "facture_" . $payment_id . ".pdf";
-$filepath = "invoices/" . $filename;
-$pdf->Output($filepath, "F"); // Enregistre dans "invoices/"
-
-// Insérer le chemin du PDF dans la base de données
-$query = "UPDATE history_user SET path_pdf = :path_pdf WHERE id_user = :id_user AND id_event = :id_event";
-$stmt = $pdo->prepare($query);
-$stmt->bindParam(':path_pdf', $filepath, PDO::PARAM_STR);
-$stmt->bindParam(':id_user', $id_user, PDO::PARAM_INT);
-$stmt->bindParam(':id_event', $atelier_id, PDO::PARAM_INT);
-$stmt->execute();
+$client_secret = $payment_intent->client_secret;
 ?>
 
 <!DOCTYPE html>
@@ -125,7 +59,8 @@ $stmt->execute();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réservation confirmée - La Ligne 13</title>
+    <title><?= htmlspecialchars($ebook['titre']); ?> - La Ligne 13</title>
+    <script src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -207,13 +142,20 @@ $stmt->execute();
             transition-delay: 0.3s;
         }
         
-        /* Success card styling */
-        .success-card {
+        /* Card styling */
+        .ebook-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .success-card:hover {
+        .ebook-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .ebook-cover {
+            height: 400px;
+            width: 100%;
+            object-fit: contain;
+            background-color: #f8f9fa;
+            padding: 1rem;
         }
     </style>
 </head>
@@ -236,14 +178,14 @@ $stmt->execute();
                         <a href="coaching.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Coaching
                         </a>
-                        <a href="ecriture.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="ecriture.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Ateliers d'écriture
+                        </a>
+                        <a href="ebooks.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            E-books
                         </a>
                         <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
-                        </a>
-                        <a href="ebooks.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
-                            Ebooks
                         </a>
                         <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
@@ -293,14 +235,14 @@ $stmt->execute();
                 <a href="coaching.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Coaching
                 </a>
-                <a href="ecriture.php" class="border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ecriture.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'écriture
+                </a>
+                <a href="ebooks.php" class="border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    E-books
                 </a>
                 <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
-                </a>
-                <a href="ebooks.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                    Ebooks
                 </a>
                 <a href="about.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     À propos
@@ -336,69 +278,134 @@ $stmt->execute();
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
             <div class="text-center">
                 <h1 class="text-3xl font-extrabold tracking-tight text-jaune sm:text-4xl md:text-5xl animate-hidden animate-element">
-                    <span class="block">Réservation confirmée</span>
+                    <span class="block"><?= htmlspecialchars($ebook['titre']); ?></span>
                 </h1>
                 <p class="mt-6 max-w-2xl mx-auto text-base text-gray-300 sm:text-lg animate-hidden animate-element animate-delay-100">
-                    Votre place pour l'atelier d'écriture a été réservée avec succès
+                    <?= htmlspecialchars($ebook['auteur']); ?>
                 </p>
             </div>
         </div>
     </div>
 
-    <!-- Success Section -->
+    <!-- E-book Details Section -->
     <div class="py-16 bg-white">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow-xl p-8 success-card animate-hidden animate-element">
-                <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center h-20 w-20 rounded-full bg-green-100 mb-6">
-                        <i class="fas fa-check text-4xl text-green-600"></i>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- E-book Image and Info -->
+                <div class="animate-hidden animate-element">
+                    <div class="bg-white rounded-lg shadow-lg p-8">
+                        <div class="mb-6">
+                            <div class="bg-violet relative rounded-lg overflow-hidden p-4">
+                                <?php if (!empty($ebook['image'])): ?>
+                                    <img src="<?= htmlspecialchars($ebook['image']); ?>" alt="<?= htmlspecialchars($ebook['titre']); ?>" class="w-full h-[500px] object-contain bg-gray-50 rounded-lg">
+                                <?php else: ?>
+                                    <div class="w-full h-[500px] flex items-center justify-center bg-gray-50 rounded-lg">
+                                        <i class="fas fa-book text-violet text-6xl"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span class="text-2xl font-bold text-violet"><?= number_format($ebook['prix'], 2, ',', ' '); ?>€</span>
+                                <span class="bg-mauve text-violet px-3 py-1 rounded-full text-sm"><?= htmlspecialchars($ebook['categorie']); ?></span>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 text-sm">
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-alt text-violet mr-2"></i>
+                                    <span><?= $ebook['nombre_pages']; ?> pages</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-calendar-alt text-violet mr-2"></i>
+                                    <span>Publié le <?= date("d/m/Y", strtotime($ebook['date_publication'])); ?></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-file-pdf text-violet mr-2"></i>
+                                    <span>Format <?= htmlspecialchars($ebook['format']); ?></span>
+                                </div>
+                                <div class="flex items-center">
+                                    <i class="fas fa-user text-violet mr-2"></i>
+                                    <span>Par <?= htmlspecialchars($ebook['auteur']); ?></span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h2 class="text-3xl font-bold text-green-600">Paiement réussi !</h2>
-                    <p class="text-xl text-gray-700 mt-2">Votre réservation a été confirmée</p>
                 </div>
                 
-                <div class="bg-lightgray p-6 rounded-lg mb-8">
-                    <h3 class="text-xl font-bold text-violet mb-4">Détails de la réservation</h3>
-                    
-                    <div class="space-y-3">
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Atelier :</span>
-                            <span class="font-semibold"><?= htmlspecialchars($atelier['titre']); ?></span>
+                <!-- E-book Description and Purchase -->
+                <div class="animate-hidden animate-element animate-delay-200">
+                    <div class="bg-white rounded-lg shadow-lg p-8">
+                        <h2 class="text-2xl font-bold text-violet mb-4">Description</h2>
+                        
+                        <div class="prose max-w-none mb-8">
+                            <p class="text-gray-700"><?= nl2br(htmlspecialchars($ebook['description'])); ?></p>
                         </div>
                         
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Date :</span>
-                            <span class="font-semibold"><?= date("d/m/Y", strtotime($atelier['date'])); ?></span>
-                        </div>
+                        <?php if ($hasAlreadyPurchased): ?>
+                            <div class="bg-green-100 text-green-800 p-4 rounded-lg mb-6">
+                                <div class="flex items-center">
+                                    <i class="fas fa-check-circle text-green-600 text-xl mr-2"></i>
+                                    <p class="font-semibold">Vous avez déjà acheté cet e-book</p>
+                                </div>
+                                <p class="mt-2">Vous pouvez le télécharger depuis votre compte.</p>
+                                <a href="myaccount.php" class="mt-4 inline-block bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors">
+                                    Accéder à mon compte
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div class="bg-lightgray p-6 rounded-lg mb-6">
+                                <h3 class="text-lg font-semibold text-violet mb-4">Acheter cet e-book</h3>
+                                
+                                <?php if (!isset($_SESSION['user_id'])): ?>
+                                    <div class="bg-yellow-100 text-yellow-800 p-4 rounded-lg mb-4">
+                                        <p>Vous devez être connecté pour acheter cet e-book.</p>
+                                        <a href="login.php?redirect=ebook-details.php?id=<?= $ebook_id; ?>" class="mt-2 inline-block text-yellow-800 underline">Se connecter</a>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="mb-6">
+                                        <div class="bg-white p-4 rounded-lg border border-gray-200">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-gray-700"><?= htmlspecialchars($ebook['titre']); ?></span>
+                                                <span class="font-semibold"><?= number_format($ebook['prix'], 2, ',', ' '); ?>€</span>
+                                            </div>
+                                            <div class="border-t border-gray-300 my-2"></div>
+                                            <div class="flex justify-between items-center font-bold">
+                                                <span>Total</span>
+                                                <span><?= number_format($ebook['prix'], 2, ',', ' '); ?>€</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <form id="payment-form" class="space-y-6">
+                                        <div>
+                                            <label for="card-element" class="block text-sm font-medium text-gray-700 mb-2">
+                                                Informations de carte
+                                            </label>
+                                            <div id="card-element" class="p-4 border border-gray-300 rounded-md bg-white"></div>
+                                            <div id="card-errors" class="mt-2 text-sm text-red-600" role="alert"></div>
+                                        </div>
+                                        
+                                        <button id="submit" type="submit" class="w-full bg-violet text-white py-3 px-4 rounded-md hover:bg-violet/90 transition-colors flex items-center justify-center">
+                                            <span id="button-text">Payer <?= number_format($ebook['prix'], 2, ',', ' '); ?>€</span>
+                                            <div id="spinner" class="hidden">
+                                                <i class="fas fa-spinner fa-spin ml-2"></i>
+                                            </div>
+                                        </button>
+                                        
+                                        <p id="payment-message" class="text-center text-sm text-gray-500"></p>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
                         
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Horaire :</span>
-                            <span class="font-semibold"><?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?></span>
+                        <div class="mt-6">
+                            <a href="ebooks.php" class="inline-flex items-center text-violet hover:text-violet/80 transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Retour à la liste des e-books
+                            </a>
                         </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Montant payé :</span>
-                            <span class="font-semibold"><?= number_format($prix, 2, ',', ' '); ?>€</span>
-                        </div>
-                        
-                        <div class="flex items-center justify-between">
-                            <span class="text-gray-600">Numéro de transaction :</span>
-                            <span class="font-semibold"><?= $payment_id; ?></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="text-center space-y-4">
-                    <p class="text-gray-700">Un email de confirmation a été envoyé à votre adresse email.</p>
-                    
-                    <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
-                        <a href="<?= $filepath; ?>" download class="inline-flex items-center justify-center px-6 py-3 bg-violet text-white rounded-md hover:bg-violet/90 transition-colors">
-                            <i class="fas fa-download mr-2"></i> Télécharger ma facture
-                        </a>
-                        
-                        <a href="index.php" class="inline-flex items-center justify-center px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
-                            <i class="fas fa-home mr-2"></i> Retour à l'accueil
-                        </a>
                     </div>
                 </div>
             </div>
@@ -427,6 +434,11 @@ $stmt->execute();
                 <div class="px-5 py-2">
                     <a href="ecriture.php" class="text-base text-gray-600 hover:text-violet">
                         Ateliers d'écriture
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="ebooks.php" class="text-base text-gray-600 hover:text-violet">
+                        E-books
                     </a>
                 </div>
                 <div class="px-5 py-2">
@@ -491,6 +503,68 @@ $stmt->execute();
                     rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 &&
                     rect.bottom >= 0
                 );
+            }
+        });
+
+        // Stripe integration
+        const stripe = Stripe("pk_test_51Q98K001jgFsFXMEM3vu9B1lai14BgLEjvSUjIjDmWb8ERdH1RvDIsEbxzvSetyJ11sdTPCOXk1Ke4MiiGVitzst00LJys7J8K");
+        const clientSecret = "<?= $client_secret; ?>";
+
+        // Create an instance of Elements
+        const elements = stripe.elements();
+        const cardElement = elements.create("card", {
+            style: {
+                base: {
+                    color: "#32325d",
+                    fontFamily: 'Arial, sans-serif',
+                    fontSmoothing: "antialiased",
+                    fontSize: "16px",
+                    "::placeholder": {
+                        color: "#aab7c4"
+                    }
+                },
+                invalid: {
+                    color: "#fa755a",
+                    iconColor: "#fa755a"
+                }
+            }
+        });
+        cardElement.mount("#card-element");
+
+        // Handle form submission
+        const form = document.getElementById("payment-form");
+        const submitButton = document.getElementById("submit");
+        const spinner = document.getElementById("spinner");
+        const buttonText = document.getElementById("button-text");
+        const paymentMessage = document.getElementById("payment-message");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            // Disable the submit button to prevent repeated clicks
+            submitButton.disabled = true;
+            buttonText.textContent = "Traitement en cours...";
+            spinner.classList.remove("hidden");
+
+            const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: { card: cardElement }
+            });
+
+            if (error) {
+                // Show error message
+                document.getElementById("card-errors").textContent = error.message;
+                buttonText.textContent = "Payer <?= number_format($ebook['prix'], 2, ',', ' '); ?>€";
+                spinner.classList.add("hidden");
+                submitButton.disabled = false;
+            } else if (paymentIntent.status === "succeeded") {
+                // Payment successful
+                paymentMessage.textContent = "Paiement réussi ! Redirection en cours...";
+                buttonText.textContent = "Paiement confirmé";
+                
+                // Redirect to success page
+                setTimeout(() => {
+                    window.location.href = "success-ebook.php?id=<?= $ebook_id; ?>&payment_id=" + paymentIntent.id;
+                }, 2000);
             }
         });
     </script>

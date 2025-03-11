@@ -1,166 +1,659 @@
 <?php
+session_start(); // Démarrer la session pour récupérer l'utilisateur connecté
 require("../backend/utils/ConnectToBDD.php");
-error_log("GET Parameters: " . json_encode($_GET));
-require '../stripe/init.php';
+require '../stripe/init.php'; // Ajuster le chemin si nécessaire
 
-if (!isset($_GET['id']) || empty($_GET['id'])) {
+// Vérifier si l'utilisateur est bien connecté
+if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
+    header('Location: login.php?redirect=coaching.php');
+    exit;
+}
+
+$user_id = $_SESSION['user_id']; // Récupération de l'ID utilisateur connecté
+
+// Vérifier que la connexion PDO fonctionne
+if (!$pdo) {
+    die("Erreur de connexion à la base de données");
+}
+
+// Vérifier l'ID du coaching
+if (!isset($_GET['id']) || !is_numeric($_GET['id']) || empty($_GET['id'])) {
     die("Coaching introuvable.");
 }
 
-$coaching_id = (int)$_GET['id'];
-$stmt = $pdo->prepare("SELECT titre, description FROM coaching WHERE id = :id");
-$stmt->execute(['id' => $coaching_id]);
+$coaching_id = (int) $_GET['id'];
+
+// Récupérer les détails du coaching
+$query = "SELECT id, titre, description FROM coaching WHERE id = :id";
+$stmt = $pdo->prepare($query);
+$stmt->bindParam(':id', $coaching_id, PDO::PARAM_INT);
+$stmt->execute();
 $coaching = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$coaching) {
     die("Coaching introuvable.");
 }
 
-$horaires = ["08:00", "09:00", "10:00", "14:00", "15:00", "16:00"];
+// Récupérer les créneaux déjà réservés pour les 3 prochains mois
+$today = date('Y-m-d');
+$threeMonthsLater = date('Y-m-d', strtotime('+3 months'));
 
+$query = "SELECT date, heure_debut FROM history_user 
+          WHERE event_type = 'coaching' 
+          AND date BETWEEN :today AND :threeMonthsLater";
+$stmt = $pdo->prepare($query);
+$stmt->bindParam(':today', $today, PDO::PARAM_STR);
+$stmt->bindParam(':threeMonthsLater', $threeMonthsLater, PDO::PARAM_STR);
+$stmt->execute();
+$reservedSlots = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Convertir en format facile à vérifier
+$reservedSlotsMap = [];
+foreach ($reservedSlots as $slot) {
+    $key = $slot['date'] . '_' . substr($slot['heure_debut'], 0, 5);
+    $reservedSlotsMap[$key] = true;
+}
+
+// Horaires disponibles par défaut
+$availableHours = ["08:00", "09:00", "10:00", "11:00", "14:00", "15:00", "16:00", "17:00"];
+
+// Initialiser Stripe avec la clé API
 \Stripe\Stripe::setApiKey('sk_test_51Q98K001jgFsFXMETPpgvXUboCcKrzpoL1WXF6cnIKt5MGkTvrLB9uI39ziCnt9rNUxB54DYCzWMAOGXyxwP2c2X00yLr8oWTz');
-$paymentIntent = \Stripe\PaymentIntent::create(['amount' => 5000, 'currency' => 'eur']);
 
+// Créer un Payment Intent pour Stripe
+$payment_intent = \Stripe\PaymentIntent::create([
+    'amount' => 5000, // Prix en centimes (50.00€)
+    'currency' => 'eur',
+    'payment_method_types' => ['card'],
+]);
 
+$client_secret = $payment_intent->client_secret;
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Réservation - <?= htmlspecialchars($coaching['titre']); ?></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Réservation - <?= htmlspecialchars($coaching['titre']); ?> - La Ligne 13</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        violet: '#330c59',
+                        jaune: '#ffeb5b',
+                        mauve: '#e4c9e5',
+                        rose: '#f9a8c9',
+                        lightgray: '#f5f5f5',
+                        darkgray: '#333333',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .hero-pattern {
+            background-color: #1a1a1a;
+            position: relative;
+            overflow: hidden;
+            height: 40vh;
+            min-height: 300px;
+        }
+        .diagonal-line-left {
+            position: absolute;
+            left: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background-color: #ffeb5b;
+            transform: rotate(15deg);
+            transform-origin: top left;
+        }
+        .diagonal-line-right {
+            position: absolute;
+            right: 0;
+            top: 20%;
+            height: 60%;
+            width: 4px;
+            background-color: #f9a8c9;
+            transform: rotate(-15deg);
+            transform-origin: top right;
+        }
+        .curved-line-bottom {
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            border: 4px solid #ffeb5b;
+            border-top: none;
+            border-right: none;
+            border-radius: 0 0 0 300px;
+        }
+
+        /* Animation classes */
+        .animate-hidden {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        .animate-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .animate-delay-100 {
+            transition-delay: 0.1s;
+        }
+        .animate-delay-200 {
+            transition-delay: 0.2s;
+        }
+        .animate-delay-300 {
+            transition-delay: 0.3s;
+        }
+        
+        /* Card styling */
+        .payment-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .payment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        /* Time slot styling */
+        .time-slot {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .time-slot:hover:not(.disabled) {
+            background-color: #e4c9e5;
+            border-color: #330c59;
+        }
+        .time-slot.selected {
+            background-color: #330c59;
+            color: white;
+            border-color: #330c59;
+        }
+        .time-slot.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #f5f5f5;
+        }
+    </style>
 </head>
-<body>
-    <div class="container">
-        <h1><?= htmlspecialchars($coaching['titre']); ?></h1>
-        <p><?= htmlspecialchars($coaching['description']); ?></p>
+<body class="bg-lightgray text-darkgray">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm fixed w-full z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <img src="../src/img/logo.jpg" alt="Logo Ligne 13" class="h-8 w-auto">
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="index.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Accueil
+                        </a>
+                        <a href="ateliers.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Ateliers d'équité
+                        </a>
+                        <a href="coaching.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Coaching
+                        </a>
+                        <a href="ecriture.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Ateliers d'écriture
+                        </a>
+                        <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Blog
+                        </a>
+                        <a href="ebooks.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ebooks
+                </a>
+                        <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            À propos
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="hidden sm:flex sm:items-center">
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                    <a href="admin.php" class="bg-violet text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Administration
+                    </a>
+                <?php else: ?>
+                    <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Contact
+                    </a>
+                <?php endif; ?>
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Mon compte
+                            </a>
+                        <?php else: ?>
+                            <a href="login.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Connexion
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                    <div class="-mr-2 ml-4 flex items-center sm:hidden">
+                        <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet" aria-controls="mobile-menu" aria-expanded="false">
+                            <span class="sr-only">Ouvrir le menu</span>
+                            <i class="fas fa-bars"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <h2>Sélectionnez une date :</h2>
-        <input type="date" id="selected-date" value="<?= date('Y-m-d') ?>" required>
+        <!-- Mobile menu, show/hide based on menu state. -->
+        <div class="sm:hidden hidden" id="mobile-menu">
+            <div class="pt-2 pb-3 space-y-1">
+                <a href="index.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Accueil
+                </a>
+                <a href="ateliers.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ateliers d'équité
+                </a>
+                <a href="coaching.php" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Coaching
+                </a>
+                <a href="ecriture.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ateliers d'écriture
+                </a>
+                <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Blog
+                </a>
+                <a href="about.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    À propos
+                </a>
+                <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Contact
+                </a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="myaccount.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Mon compte
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Connexion
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
 
-        <h2>Sélectionnez un horaire :</h2>
-        <div id="horaire-container"></div>
-
-        <form id="payment-form">
-            <div id="card-element"></div>
-            <button type="submit" id="submit" disabled>Réserver ma place (50,00€)</button>
-        </form>
-        <div id="payment-message"></div>
+    <!-- Hero Section -->
+    <div class="hero-pattern flex items-center">
+        <div class="diagonal-line-left"></div>
+        <div class="diagonal-line-right"></div>
+        <div class="curved-line-bottom"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 pt-16">
+            <div class="text-center">
+                <h1 class="text-3xl font-extrabold tracking-tight text-jaune sm:text-4xl md:text-5xl animate-hidden animate-element">
+                    <span class="block">Réservation</span>
+                    <span class="block text-white mt-2"><?= htmlspecialchars($coaching['titre']); ?></span>
+                </h1>
+                <p class="mt-6 max-w-2xl mx-auto text-base text-gray-300 sm:text-lg animate-hidden animate-element animate-delay-100">
+                    Complétez votre réservation en quelques étapes simples
+                </p>
+            </div>
+        </div>
     </div>
 
+    <!-- Reservation Section -->
+    <div class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <!-- Coaching Details -->
+                <div class="animate-hidden animate-element">
+                    <div class="bg-white rounded-lg shadow-lg p-8">
+                        <h2 class="text-2xl font-bold text-violet mb-4">Détails du coaching</h2>
+                        
+                        <div class="mb-6">
+                            <div class="h-48 bg-violet relative rounded-lg overflow-hidden">
+                                <img src="../src/img/coaching<?= $coaching['id'] % 3 + 1; ?>.jpg" alt="<?= htmlspecialchars($coaching['titre']); ?>" class="w-full h-full object-cover opacity-70">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <h3 class="text-2xl font-bold text-white text-center px-4"><?= htmlspecialchars($coaching['titre']); ?></h3>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="far fa-file-alt text-violet text-xl w-8 mt-1"></i>
+                                <div class="ml-2">
+                                    <h4 class="font-semibold">Description :</h4>
+                                    <p class="text-gray-700"><?= nl2br(htmlspecialchars($coaching['description'])); ?></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="fas fa-clock text-violet text-xl w-8"></i>
+                                <span class="ml-2">Durée : 1 heure</span>
+                            </div>
+                            
+                            <div class="flex items-center">
+                                <i class="fas fa-tag text-violet text-xl w-8"></i>
+                                <span class="ml-2 font-semibold">Prix : 50,00€</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reservation Form -->
+                <div class="animate-hidden animate-element animate-delay-200">
+                    <div class="bg-white rounded-lg shadow-lg p-8 payment-card">
+                        <h2 class="text-2xl font-bold text-violet mb-6">Réservation</h2>
+                        
+                        <form id="reservation-form" class="space-y-6">
+                            <div>
+                                <label for="selected-date" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Sélectionnez une date
+                                </label>
+                                <input type="date" id="selected-date" name="selected-date" min="<?= date('Y-m-d'); ?>" max="<?= date('Y-m-d', strtotime('+3 months')); ?>" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" required>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Sélectionnez un horaire
+                                </label>
+                                <div id="time-slots" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                    <p class="col-span-full text-center text-gray-500">Veuillez d'abord sélectionner une date</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8">
+                                <h3 class="text-lg font-semibold text-violet mb-4">Paiement</h3>
+                                
+                                <div class="mb-6">
+                                    <div class="bg-lightgray p-4 rounded-lg">
+                                        <div class="flex justify-between items-center">
+                                            <span class="text-gray-700">Séance de coaching</span>
+                                            <span class="font-semibold">50,00€</span>
+                                        </div>
+                                        <div class="border-t border-gray-300 my-2"></div>
+                                        <div class="flex justify-between items-center font-bold">
+                                            <span>Total</span>
+                                            <span>50,00€</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="card-element" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Informations de carte
+                                    </label>
+                                    <div id="card-element" class="p-4 border border-gray-300 rounded-md bg-white"></div>
+                                    <div id="card-errors" class="mt-2 text-sm text-red-600" role="alert"></div>
+                                </div>
+                                
+                                <button id="submit-button" type="submit" class="w-full mt-6 bg-violet text-white py-3 px-4 rounded-md hover:bg-violet/90 transition-colors flex items-center justify-center" disabled>
+                                    <span id="button-text">Payer 50,00€</span>
+                                    <div id="spinner" class="hidden">
+                                        <i class="fas fa-spinner fa-spin ml-2"></i>
+                                    </div>
+                                </button>
+                                
+                                <p id="payment-message" class="text-center text-sm text-gray-500 mt-4"></p>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-lightgray border-t border-gray-200">
+        <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
+            <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
+                <div class="px-5 py-2">
+                    <a href="index.php" class="text-base text-gray-600 hover:text-violet">
+                        Accueil
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="ateliers.php" class="text-base text-gray-600 hover:text-violet">
+                        Ateliers d'équité
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="coaching.php" class="text-base text-gray-600 hover:text-violet">
+                        Coaching
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="ecriture.php" class="text-base text-gray-600 hover:text-violet">
+                        Ateliers d'écriture
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="blog.php" class="text-base text-gray-600 hover:text-violet">
+                        Blog
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="about.html" class="text-base text-gray-600 hover:text-violet">
+                        À propos
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="contact.html" class="text-base text-gray-600 hover:text-violet">
+                        Contact
+                    </a>
+                </div>
+            </nav>
+            <div class="mt-8 flex justify-center space-x-6">
+                <a href="https://www.linkedin.com/in/audrey-rebout-9144b7162/" class="text-gray-500 hover:text-violet">
+                    <span class="sr-only">LinkedIn</span>
+                    <i class="fab fa-linkedin text-xl"></i>
+                </a>
+                <a href="https://www.instagram.com/la_ligne_13.coaching/" class="text-gray-500 hover:text-violet">
+                    <span class="sr-only">Instagram</span>
+                    <i class="fab fa-instagram text-xl"></i>
+                </a>
+            </div>
+            <p class="mt-8 text-center text-base text-gray-500">
+                &copy; 2025 La Ligne 13. Tous droits réservés.
+            </p>
+        </div>
+    </footer>
+
     <script>
-        const horaires = <?= json_encode($horaires); ?>;
-        const stripe = Stripe("pk_test_51Q98K001jgFsFXMEM3vu9B1lai14BgLEjvSUjIjDmWb8ERdH1RvDIsEbxzvSetyJ11sdTPCOXk1Ke4MiiGVitzst00LJys7J8K");
-        const elements = stripe.elements();
-        const card = elements.create("card");
-        card.mount("#card-element");
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
 
-        let selectedHour = "";
-        let selectedDate = document.getElementById("selected-date").value;
-
-       
-        async function loadHoraires(date) {
-    console.log("Chargement des horaires pour :", date);
-
-    try {
-        const response = await fetch(`get_reserved_slots.php?date=${date}`);
-        
-        // Vérifier si la requête HTTP a réussi
-        if (!response.ok) {
-            throw new Error(`Erreur serveur : ${response.status}`);
-        }
-
-        // Lire la réponse et logguer le JSON reçu
-        const reserved = await response.json();
-        console.log("Réponse brute reçue de l'API:", reserved);
-
-        // Vérifier si la réponse est bien un tableau
-        if (!Array.isArray(reserved)) {
-            console.error("Données invalides reçues (pas un tableau).");
-            document.getElementById("horaire-container").innerHTML = "<p>Erreur : données invalides.</p>";
-            return;
-        }
-
-        const container = document.getElementById("horaire-container");
-        container.innerHTML = "";
-
-        // Normalisation des heures réservées pour éviter les erreurs de comparaison
-        const reservedFormatted = reserved.map(h => h.trim());
-
-        console.log("Horaires disponibles initiaux :", horaires);
-        console.log("Horaires réservés formatés :", reservedFormatted);
-
-        let hasAvailableSlot = false;
-
-        horaires.forEach(heure => {
-            const formattedHeure = heure.trim();
-
-            console.log(`Vérification : ${formattedHeure} est réservé ?`, reservedFormatted.includes(formattedHeure));
-
-            if (!reservedFormatted.includes(formattedHeure)) {
-                const [h, m] = formattedHeure.split(":");
-                const fin = (parseInt(h, 10) + 1).toString().padStart(2, '0') + ":" + m;
-
-                const btn = document.createElement("button");
-                btn.className = "horaire-btn";
-                btn.dataset.hour = formattedHeure;
-                btn.innerText = `${formattedHeure} - ${fin}`;
-                btn.onclick = () => {
-                    document.querySelectorAll(".horaire-btn").forEach(b => b.classList.remove("selected"));
-                    btn.classList.add("selected");
-                    selectedHour = formattedHeure;
-                    checkFormReady();
-                };
-                console.log("Ajout du bouton :", btn.innerText);
-                container.appendChild(btn);
-                hasAvailableSlot = true;
+        // Scroll animation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial check for elements in viewport
+            checkVisibility();
+            
+            // Add scroll event listener
+            window.addEventListener('scroll', checkVisibility);
+            
+            function checkVisibility() {
+                const elements = document.querySelectorAll('.animate-hidden');
+                
+                elements.forEach(element => {
+                    if (isElementInViewport(element)) {
+                        element.classList.add('animate-visible');
+                    }
+                });
+            }
+            
+            function isElementInViewport(el) {
+                const rect = el.getBoundingClientRect();
+                return (
+                    rect.top <= (window.innerHeight || document.documentElement.clientHeight) * 0.85 &&
+                    rect.bottom >= 0
+                );
             }
         });
 
-        if (!hasAvailableSlot) {
-            container.innerHTML = "<p>Aucun créneau disponible pour cette date.</p>";
-        }
-    } catch (error) {
-        console.error("Erreur lors du chargement des horaires :", error);
-        document.getElementById("horaire-container").innerHTML = "<p>Erreur lors du chargement des créneaux.</p>";
-    }
-}
-
-
-
-
-
-
-
-        document.getElementById("selected-date").addEventListener("change", (e) => {
-            selectedDate = e.target.value;
-            selectedHour = "";
-            loadHoraires(selectedDate);
-            checkFormReady();
+        // Reservation system
+        document.addEventListener('DOMContentLoaded', function() {
+            const dateInput = document.getElementById('selected-date');
+            const timeSlotsContainer = document.getElementById('time-slots');
+            const submitButton = document.getElementById('submit-button');
+            
+            // Set default date to today
+            dateInput.value = new Date().toISOString().split('T')[0];
+            
+            // Available hours
+            const availableHours = <?= json_encode($availableHours); ?>;
+            
+            // Reserved slots map
+            const reservedSlotsMap = <?= json_encode($reservedSlotsMap); ?>;
+            
+            let selectedTimeSlot = null;
+            
+            // Update time slots when date changes
+            dateInput.addEventListener('change', updateTimeSlots);
+            
+            // Initial update
+            updateTimeSlots();
+            
+            function updateTimeSlots() {
+                const selectedDate = dateInput.value;
+                
+                // Clear previous slots
+                timeSlotsContainer.innerHTML = '';
+                
+                // Reset selected time slot
+                selectedTimeSlot = null;
+                submitButton.disabled = true;
+                
+                // Check if selected date is a weekend
+                const dayOfWeek = new Date(selectedDate).getDay();
+                if (dayOfWeek === 0 || dayOfWeek === 6) {
+                    timeSlotsContainer.innerHTML = '<p class="col-span-full text-center text-gray-500">Les réservations ne sont pas disponibles le weekend</p>';
+                    return;
+                }
+                
+                // Generate time slots
+                let hasAvailableSlot = false;
+                
+                availableHours.forEach(hour => {
+                    const slotKey = selectedDate + '_' + hour;
+                    const isReserved = reservedSlotsMap[slotKey] === true;
+                    
+                    const slot = document.createElement('div');
+                    slot.className = `time-slot border rounded-md p-2 text-center ${isReserved ? 'disabled' : ''}`;
+                    
+                    // Calculate end time (1 hour later)
+                    const [h, m] = hour.split(':');
+                    const endHour = (parseInt(h) + 1).toString().padStart(2, '0');
+                    const endTime = `${endHour}:${m}`;
+                    
+                    slot.textContent = `${hour} - ${endTime}`;
+                    
+                    if (!isReserved) {
+                        hasAvailableSlot = true;
+                        slot.addEventListener('click', function() {
+                            // Remove selected class from all slots
+                            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                            
+                            // Add selected class to this slot
+                            this.classList.add('selected');
+                            
+                            // Update selected time slot
+                            selectedTimeSlot = hour;
+                            
+                            // Enable submit button
+                            submitButton.disabled = false;
+                        });
+                    }
+                    
+                    timeSlotsContainer.appendChild(slot);
+                });
+                
+                if (!hasAvailableSlot) {
+                    timeSlotsContainer.innerHTML = '<p class="col-span-full text-center text-gray-500">Aucun créneau disponible pour cette date</p>';
+                }
+            }
         });
 
-        function checkFormReady() {
-            document.getElementById("submit").disabled = !(selectedHour && selectedDate);
-        }
+        // Stripe integration
+        const stripe = Stripe("pk_test_51Q98K001jgFsFXMEM3vu9B1lai14BgLEjvSUjIjDmWb8ERdH1RvDIsEbxzvSetyJ11sdTPCOXk1Ke4MiiGVitzst00LJys7J8K");
+        const clientSecret = "<?= $client_secret; ?>";
 
-        document.getElementById("payment-form").addEventListener("submit", async function(event) {
-            event.preventDefault();
-            const {paymentIntent, error} = await stripe.confirmCardPayment(
-                "<?= $paymentIntent->client_secret ?>", {
-                    payment_method: {card: card}
+        // Create an instance of Elements
+        const elements = stripe.elements();
+        const cardElement = elements.create("card", {
+            style: {
+                base: {
+                    color: "#32325d",
+                    fontFamily: 'Arial, sans-serif',
+                    fontSmoothing: "antialiased",
+                    fontSize: "16px",
+                    "::placeholder": {
+                        color: "#aab7c4"
+                    }
+                },
+                invalid: {
+                    color: "#fa755a",
+                    iconColor: "#fa755a"
                 }
-            );
+            }
+        });
+        cardElement.mount("#card-element");
+
+        // Handle form submission
+        const form = document.getElementById("reservation-form");
+        const submitButton = document.getElementById("submit-button");
+        const spinner = document.getElementById("spinner");
+        const buttonText = document.getElementById("button-text");
+        const paymentMessage = document.getElementById("payment-message");
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const selectedDate = document.getElementById("selected-date").value;
+            const selectedTimeSlot = document.querySelector(".time-slot.selected");
+            
+            if (!selectedDate || !selectedTimeSlot) {
+                paymentMessage.textContent = "Veuillez sélectionner une date et un horaire";
+                return;
+            }
+            
+            const selectedHour = selectedTimeSlot.textContent.split(" - ")[0];
+
+            // Disable the submit button to prevent repeated clicks
+            submitButton.disabled = true;
+            buttonText.textContent = "Traitement en cours...";
+            spinner.classList.remove("hidden");
+
+            const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                payment_method: { card: cardElement }
+            });
 
             if (error) {
-                document.getElementById("payment-message").textContent = error.message;
+                // Show error message
+                document.getElementById("card-errors").textContent = error.message;
+                buttonText.textContent = "Payer 50,00€";
+                spinner.classList.add("hidden");
+                submitButton.disabled = false;
             } else if (paymentIntent.status === "succeeded") {
-                window.location.href = `success_coaching.php?id=<?= $coaching_id ?>&payment_id=${paymentIntent.id}&date=${selectedDate}&hour=${selectedHour}`;
+                // Payment successful
+                paymentMessage.textContent = "Paiement réussi ! Redirection en cours...";
+                buttonText.textContent = "Paiement confirmé";
+                
+                // Redirect to success page
+                setTimeout(() => {
+                    window.location.href = `success_coaching.php?id=<?= $coaching_id; ?>&payment_id=${paymentIntent.id}&date=${selectedDate}&hour=${selectedHour}`;
+                }, 2000);
             }
         });
-
-        // Initial loading
-        loadHoraires(selectedDate);
     </script>
 </body>
 </html>

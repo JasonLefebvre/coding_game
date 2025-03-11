@@ -220,6 +220,9 @@ $query_future = "SELECT id, titre, description, categorie
                         <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
                         </a>
+                        <a href="ebooks.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Ebooks
+                        </a>
                         <a href="about.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
                         </a>
@@ -227,9 +230,15 @@ $query_future = "SELECT id, titre, description, categorie
                 </div>
                 <div class="flex items-center">
                     <div class="hidden sm:flex sm:items-center">
-                        <a href="contact.php" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
-                            Contactez-nous
-                        </a>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                    <a href="admin.php" class="bg-violet text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Administration
+                    </a>
+                <?php else: ?>
+                    <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Contact
+                    </a>
+                <?php endif; ?>
                         <?php if (isset($_SESSION['user_id'])): ?>
                             <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
                                 Mon compte
@@ -267,6 +276,9 @@ $query_future = "SELECT id, titre, description, categorie
                 </a>
                 <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
+                </a>
+                <a href="ebooks.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ebooks
                 </a>
                 <a href="about.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     À propos
@@ -607,7 +619,7 @@ $query_future = "SELECT id, titre, description, categorie
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="coaching.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="coaching.php" class="text-base text-gray-600 hover:text-violet">
                         Coaching
                     </a>
                 </div>
@@ -622,12 +634,17 @@ $query_future = "SELECT id, titre, description, categorie
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="about.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="ebooks.php" class="text-base text-gray-600 hover:text-violet">
+                        Ebooks
+                    </a>
+                </div>
+                <div class="px-5 py-2">
+                    <a href="about.php" class="text-base text-gray-600 hover:text-violet">
                         À propos
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="contact.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="contact.php" class="text-base text-gray-600 hover:text-violet">
                         Contact
                     </a>
                 </div>

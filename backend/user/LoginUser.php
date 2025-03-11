@@ -30,7 +30,11 @@ if (!$user) {
         $_SESSION['phone'] = $user['telephone'];
         $_SESSION['registerDate'] = $user['date_inscription'];
         $_SESSION['isVerified'] = $user['is_verified'];
-        $_SESSION['role'] = $user['role_user'];
+        if ($user['role_user'] == "admin") {
+            $_SESSION['isAdmin'] = 1;
+        } else {
+            $_SESSION['isAdmin'] = 0;
+        }
 
         setcookie("user", $user["id"], time() + (86400 * 30));
 

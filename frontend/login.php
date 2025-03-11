@@ -140,6 +140,9 @@ session_start();
                         <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
                         </a>
+                        <a href="ebooks.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                            Ebooks
+                        </a>
                         <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
                         </a>
@@ -147,9 +150,15 @@ session_start();
                 </div>
                 <div class="flex items-center">
                     <div class="hidden sm:flex sm:items-center">
-                        <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
-                            Contactez-nous
-                        </a>
+                        <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                            <a href="admin.php" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
+                                Administration
+                            </a>
+                        <?php else: ?>
+                            <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
+                                Contactez-nous
+                            </a>
+                        <?php endif; ?>
                         <a href="login.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ml-4">
                             Connexion
                         </a>
@@ -182,12 +191,21 @@ session_start();
                 <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
                 </a>
+                <a href="ebooks.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ebooks
+                </a>
                 <a href="about.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     À propos
                 </a>
-                <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-                    Contact
-                </a>
+                <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                    <a href="admin.php" class="bg-violet text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Administration
+                    </a>
+                <?php else: ?>
+                    <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Contact
+                    </a>
+                <?php endif; ?>
                 <a href="login.php" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Connexion
                 </a>
@@ -286,13 +304,13 @@ session_start();
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="about.html" class="text-base text-gray-600 hover:text-violet">
-                        À propos
+                    <a href="ebooks.php" class="text-base text-gray-600 hover:text-violet">
+                        Ebooks
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="contact.html" class="text-base text-gray-600 hover:text-violet">
-                        Contact
+                    <a href="about.html" class="text-base text-gray-600 hover:text-violet">
+                        À propos
                     </a>
                 </div>
             </nav>

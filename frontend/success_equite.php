@@ -50,16 +50,61 @@ if (!is_dir("invoices")) {
 // Génération du fichier PDF avec FPDF
 $pdf = new FPDF();
 $pdf->AddPage();
-$pdf->SetFont('Arial', 'B', 16);
-$pdf->Cell(0, 10, "Facture de reservation", 0, 1, 'C');
 
+// En-tête du PDF
+$pdf->SetFillColor(51, 12, 89); // Couleur violet de La Ligne 13
+$pdf->Rect(0, 0, 210, 40, 'F');
+$pdf->SetTextColor(255, 255, 255);
+$pdf->SetFont('Arial', 'B', 24);
+$pdf->Cell(0, 20, utf8_decode("FACTURE"), 0, 1, 'C');
 $pdf->SetFont('Arial', '', 12);
-$pdf->Cell(0, 10, "Atelier : " . utf8_decode($atelier['nom']), 0, 1);
-$pdf->Cell(0, 10, "Date : " . date("d/m/Y", strtotime($atelier['date'])), 0, 1);
-$pdf->Cell(0, 10, "Heure : " . date("H:i", strtotime($atelier['heure_debut'])) . " - " . date("H:i", strtotime($atelier['heure_fin'])), 0, 1);
-$pdf->Cell(0, 10, "Lieu : " . utf8_decode($atelier['type']), 0, 1);
-$pdf->Cell(0, 10, "Prix : " . number_format($prix, 2, ',', ' ') . "€", 0, 1);
-$pdf->Cell(0, 10, "Paiement ID : " . $payment_id, 0, 1);
+$pdf->Cell(0, 10, utf8_decode("La Ligne 13 - Coaching & Ateliers"), 0, 1, 'C');
+
+// Informations de la facture
+$pdf->SetTextColor(0, 0, 0);
+$pdf->SetY(50);
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 10, utf8_decode("Facture N° " . $payment_id), 0, 1);
+$pdf->SetFont('Arial', '', 10);
+$pdf->Cell(0, 7, utf8_decode("Date d'émission : " . date("d/m/Y")), 0, 1);
+$pdf->Cell(0, 7, utf8_decode("Client : " . (isset($_SESSION['nom']) ? $_SESSION['prenom'] . ' ' . $_SESSION['nom'] : 'Client #' . $id_user)), 0, 1);
+$pdf->Ln(10);
+
+// Détails de la prestation
+$pdf->SetFillColor(240, 240, 240);
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->Cell(90, 10, utf8_decode("Description"), 1, 0, 'C', true);
+$pdf->Cell(30, 10, utf8_decode("Date"), 1, 0, 'C', true);
+$pdf->Cell(30, 10, utf8_decode("Horaire"), 1, 0, 'C', true);
+$pdf->Cell(40, 10, utf8_decode("Montant"), 1, 1, 'C', true);
+
+$pdf->SetFont('Arial', '', 10);
+$pdf->Cell(90, 10, utf8_decode($atelier['nom']), 1, 0, 'L');
+$pdf->Cell(30, 10, date("d/m/Y", strtotime($atelier['date'])), 1, 0, 'C');
+$pdf->Cell(30, 10, date("H:i", strtotime($atelier['heure_debut'])) . ' - ' . date("H:i", strtotime($atelier['heure_fin'])), 1, 0, 'C');
+$pdf->Cell(40, 10, number_format($prix, 2, ',', ' ') . " EUR", 1, 1, 'R');
+
+// Total
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->Cell(150, 10, utf8_decode("Total"), 1, 0, 'R', true);
+$pdf->Cell(40, 10, number_format($prix, 2, ',', ' ') . " EUR", 1, 1, 'R', true);
+
+// Informations de paiement
+$pdf->Ln(10);
+$pdf->SetFont('Arial', 'B', 10);
+$pdf->Cell(0, 10, utf8_decode("Informations de paiement"), 0, 1);
+$pdf->SetFont('Arial', '', 10);
+$pdf->Cell(0, 7, utf8_decode("Méthode de paiement : Carte bancaire"), 0, 1);
+$pdf->Cell(0, 7, utf8_decode("Référence de transaction : " . $payment_id), 0, 1);
+$pdf->Cell(0, 7, utf8_decode("Statut : Payé"), 0, 1);
+
+// Pied de page
+$pdf->SetY(-40);
+$pdf->SetFont('Arial', 'I', 8);
+$pdf->Cell(0, 10, utf8_decode("La Ligne 13 - SIRET : 123 456 789 00012"), 0, 1, 'C');
+$pdf->Cell(0, 5, utf8_decode("13 Rue de l'Exemple, 75000 Paris"), 0, 1, 'C');
+$pdf->Cell(0, 5, utf8_decode("Email : contact@laligne13.fr - Tél : 01 23 45 67 89"), 0, 1, 'C');
+$pdf->Cell(0, 5, utf8_decode("Merci pour votre confiance !"), 0, 1, 'C');
 
 // Sauvegarde du PDF
 $filename = "facture_" . $payment_id . ".pdf";
@@ -197,6 +242,9 @@ $stmt->execute();
                         <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
                         </a>
+                        <a href="ebooks.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    Ebooks
+                </a>
                         <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
                         </a>
@@ -204,9 +252,15 @@ $stmt->execute();
                 </div>
                 <div class="flex items-center">
                     <div class="hidden sm:flex sm:items-center">
-                        <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
-                            Contactez-nous
-                        </a>
+                    <?php if (isset($_SESSION['is_admin']) && $_SESSION['is_admin'] == 1): ?>
+                    <a href="admin.php" class="bg-violet text-white block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Administration
+                    </a>
+                <?php else: ?>
+                    <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Contact
+                    </a>
+                <?php endif; ?>
                         <?php if (isset($_SESSION['user_id'])): ?>
                             <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
                                 Mon compte
