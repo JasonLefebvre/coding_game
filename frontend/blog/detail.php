@@ -1,6 +1,7 @@
 <?php
 
 session_start();
+
 require("../../backend/utils/ConnectToBDD.php");
 if (isset($_GET["id"]) && is_numeric($_GET["id"])){
     $id = intval($_GET["id"]);
@@ -26,6 +27,14 @@ $stmt = $pdo->prepare($query);
 $stmt->execute(['id' => $id]);
 $comments = $stmt->fetchAll();
 
+function getUserName($userId, $pdo) {
+    $query = "SELECT nom, prenom FROM users WHERE id = ?";
+    $stmt = $pdo->prepare($query);
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    return ["nom" => $user["nom"], "prenom" => $user["prenom"]];
+}
+
 ?>
 
 <!doctype html>
@@ -48,8 +57,8 @@ $comments = $stmt->fetchAll();
     <div class="post-comments">
         <?php foreach ($comments as $comment): ?>
         <div class="comment">
-            <div><?php echo $comment["user_id"] ?></div>
-            <div><?php echo $comment["comment"] ?></div>
+            <div><?php echo getUserName($comment["user_id"], $pdo)["nom"] . " " . getUserName($comment["user_id"], $pdo)["prenom"] ?></div>
+            <div><?php echo $comment["commentaire"] ?></div>
             <div><?php echo $comment["date_publi"] ?></div>
         </div>
         <?php endforeach; ?>
@@ -57,6 +66,7 @@ $comments = $stmt->fetchAll();
     <div class="send-comment">
         <form action="../../backend/generators/CommentGenerator.php" method="post">
             <div>
+                <input type="hidden" name="post_id" value="<?php echo $id ?>">
                 <label for="comment">Ajouter un commentaire :</label>
                 <textarea name="comment"></textarea>
             </div>
