@@ -330,19 +330,19 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <img src="../src/img/logo.jpg" alt="Logo Ligne 13" class="h-8 w-auto">
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                        <a href="index.html" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        <a href="index.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Accueil
                         </a>
-                        <a href="ateliers.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="ateliers.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Ateliers d'équité
                         </a>
                         <a href="coaching.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Coaching
                         </a>
-                        <a href="ecriture.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="ecriture.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Ateliers d'écriture
                         </a>
-                        <a href="blog.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
                         </a>
                     </div>
@@ -375,19 +375,19 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="sm:hidden hidden" id="mobile-menu">
             <div class="pt-2 pb-3 space-y-1">
-                <a href="index.html" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="index.php" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Accueil
                 </a>
-                <a href="ateliers.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ateliers.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'équité
                 </a>
-                <a href="coaching.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="coaching.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Coaching
                 </a>
-                <a href="ecriture.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ecriture.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'écriture
                 </a>
-                <a href="blog.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
                 </a>
                 <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
@@ -482,7 +482,7 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Vos équipes ne se comprennent plus ? Vous voulez relever les challenges de demain avec les femmes et les hommes ?
                         </p>
                         <div class="mt-6">
-                            <a href="ateliers.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
+                            <a href="ateliers.php" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
                                 Découvrir les ateliers
                             </a>
                         </div>
@@ -505,7 +505,7 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Vous souhaitez Oser ? Prendre confiance ? Trouver votre place dans un environnement professionnel ?
                         </p>
                         <div class="mt-6">
-                            <a href="coaching.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
+                            <a href="coaching.php" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
                                 Découvrir le coaching
                             </a>
                         </div>
@@ -528,7 +528,7 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Vous souhaitez vous exprimer, mais n'osez pas franchir la porte d'une coach ? Déposer ? Libérer le trop plein ?
                         </p>
                         <div class="mt-6">
-                            <a href="ecriture.html" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
+                            <a href="ecriture.php" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-violet hover:bg-violet/90 w-full">
                                 Découvrir les ateliers
                             </a>
                         </div>
@@ -705,27 +705,27 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
             <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
                 <div class="px-5 py-2">
-                    <a href="index.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="index.php" class="text-base text-gray-600 hover:text-violet">
                         Accueil
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="ateliers.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="ateliers.php" class="text-base text-gray-600 hover:text-violet">
                         Ateliers d'équité
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="coaching.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="coaching.php" class="text-base text-gray-600 hover:text-violet">
                         Coaching
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="ecriture.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="ecriture.php" class="text-base text-gray-600 hover:text-violet">
                         Ateliers d'écriture
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="blog.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="blog.php" class="text-base text-gray-600 hover:text-violet">
                         Blog
                     </a>
                 </div>

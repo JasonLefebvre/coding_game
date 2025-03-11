@@ -29,7 +29,7 @@ $user_id = $_SESSION['user_id'];
 
 // Requête SQL pour récupérer les sessions
 $query = "
-    SELECT h.id_event, h.event_type,
+    SELECT h.id_event, h.event_type, h.date, h.prix,
        COALESCE(ae.titre, aq.nom, c.titre) AS titre,
        COALESCE(ae.date, aq.date, NULL) AS date_event,
        COALESCE(ae.description, aq.description, c.description) AS description,
@@ -147,6 +147,53 @@ foreach ($sessions as $session) {
             </ul>
         <?php else: ?>
             <p class="text-gray-500">Aucun historique disponible.</p>
+        <?php endif; ?>
+
+        <!-- Mes factures -->
+        <h2 class="text-2xl font-bold text-violet mt-8 mb-4">Mes factures</h2>
+        <?php
+        // Récupérer les factures depuis la table history_user avec les titres des ateliers ou coachings
+        $query = "
+            SELECT h.id_event, h.event_type, h.path_pdf, h.date, h.prix,
+                   COALESCE(ae.titre, aq.nom, c.titre) AS titre
+            FROM history_user h
+            LEFT JOIN atelier_ecriture ae ON h.event_type = 'atelier_ecriture' AND h.id_event = ae.id
+            LEFT JOIN atelier_equite aq ON h.event_type = 'atelier_equite' AND h.id_event = aq.id
+            LEFT JOIN coaching c ON h.event_type = 'coaching' AND h.id_event = c.id
+            WHERE h.id_user = :user_id AND h.path_pdf IS NOT NULL
+            ORDER BY h.date DESC;
+        ";
+
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $factures = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        ?>
+
+        <?php if (!empty($factures)): ?>
+            <ul class="space-y-2">
+                <?php foreach ($factures as $facture): ?>
+                    <li class="bg-gray-100 p-4 rounded-md flex justify-between items-center">
+                        <div>
+                            <strong>Facture pour <?= htmlspecialchars($facture['titre']); ?> (<?= htmlspecialchars($facture['event_type']); ?>)</strong>
+                            <br>
+                            <span class="text-gray-700">Date : <?= date("d/m/Y", strtotime($facture['date'])); ?></span>
+                            <br>
+                            <span class="text-gray-700">Prix : <?= number_format($facture['prix'], 2, ',', ' ') ?>€</span>
+                        </div>
+                        <div class="flex space-x-3">
+                            <a href="<?= htmlspecialchars($facture['path_pdf']); ?>" target="_blank" class="px-4 py-2 bg-blue-500 text-white rounded-md">
+                                📂 Ouvrir
+                            </a>
+                            <a href="<?= htmlspecialchars($facture['path_pdf']); ?>" download class="px-4 py-2 bg-green-500 text-white rounded-md">
+                                ⬇ Télécharger
+                            </a>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p class="text-gray-500">Aucune facture disponible.</p>
         <?php endif; ?>
     </div>
 </body>
