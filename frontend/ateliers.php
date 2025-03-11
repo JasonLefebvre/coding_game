@@ -14,12 +14,8 @@ $query_future = "SELECT id, nom, description, date, heure_debut, heure_fin, type
                  WHERE date >= '" . date("Y-m-d") . "' 
                  ORDER BY date ASC";
 
-                 $stmt_future = $pdo->query($query_future);
-                 $ateliers_futurs = $stmt_future->fetchAll(PDO::FETCH_ASSOC);
-                 
-                 
-                 
-
+$stmt_future = $pdo->query($query_future);
+$ateliers_futurs = $stmt_future->fetchAll(PDO::FETCH_ASSOC);
 
 // Récupérer les ateliers passés
 $query_past = "SELECT id, nom, description, date, heure_debut, heure_fin, type 
@@ -31,7 +27,6 @@ $stmt_past->bindParam(':today', $today, PDO::PARAM_STR);
 $stmt_past->execute();
 $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">
@@ -201,13 +196,13 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
                         <a href="ateliers.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Ateliers d'équité
                         </a>
-                        <a href="coaching.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="coaching.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Coaching
                         </a>
-                        <a href="ecriture.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="ecriture.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Ateliers d'écriture
                         </a>
-                        <a href="blog.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="blog.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Blog
                         </a>
                         <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
@@ -215,10 +210,21 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
                         </a>
                     </div>
                 </div>
-                <div class="hidden sm:flex sm:items-center">
-                    <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
-                        Contactez-nous
-                    </a>
+                <div class="flex items-center">
+                    <div class="hidden sm:flex sm:items-center">
+                        <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
+                            Contactez-nous
+                        </a>
+                        <?php if (isset($_SESSION['user_id'])): ?>
+                            <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Mon compte
+                            </a>
+                        <?php else: ?>
+                            <a href="login.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Connexion
+                            </a>
+                        <?php endif; ?>
+                    </div>
                     <div class="-mr-2 ml-4 flex items-center sm:hidden">
                         <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet" aria-controls="mobile-menu" aria-expanded="false">
                             <span class="sr-only">Ouvrir le menu</span>
@@ -232,24 +238,36 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
         <!-- Mobile menu, show/hide based on menu state. -->
         <div class="sm:hidden hidden" id="mobile-menu">
             <div class="pt-2 pb-3 space-y-1">
-                <a href="index.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="index.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Accueil
                 </a>
-                <a href="ateliers.html" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ateliers.php" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'équité
                 </a>
-                <a href="coaching.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="coaching.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Coaching
                 </a>
-                <a href="ecriture.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="ecriture.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'écriture
                 </a>
-                <a href="blog.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="blog.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
+                </a>
+                <a href="about.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                    À propos
                 </a>
                 <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Contact
                 </a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="myaccount.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Mon compte
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Connexion
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -316,123 +334,104 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
-    <!-- Workshops Section -->
+    <!-- Workshops Section - Ateliers à venir -->
     <div id="workshops" class="py-16 bg-lightgray">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
-                    Nos ateliers d'équité
+                    Nos ateliers à venir
                 </h2>
                 <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
-                    Des formats adaptés à vos besoins et à votre contexte
+                    Découvrez et réservez nos prochains ateliers !
                 </p>
             </div>
-            
+
             <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-                <div id="workshops" class="py-16 bg-lightgray">
-                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div class="text-center mb-12">
-                            <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
-                                Nos ateliers à venir
-                            </h2>
-                            <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
-                                Découvrez et réservez nos prochains ateliers !
-                            </p>
-                        </div>
-
-                    <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-                    <?php if (!empty($ateliers_futurs)): ?>
-    <?php foreach ($ateliers_futurs as $index => $atelier): ?>
-        <div class="bg-white rounded-lg shadow-xl overflow-hidden workshop-card animate-hidden animate-element animate-delay-<?= ($index * 100); ?>">
-            <div class="h-48 bg-violet relative">
-                <img src="../src/img/workshop<?= htmlspecialchars($atelier['id']); ?>.jpg" 
-                     alt="<?= htmlspecialchars($atelier['nom']); ?>" 
-                     class="w-full h-full object-cover opacity-70">
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <h3 class="text-2xl font-bold text-white">
-                        <?= htmlspecialchars($atelier['nom']); ?>
-                    </h3>
-                </div>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 mb-4">
-                    <span class="font-bold">Date :</span> <?= date("d/m/Y", strtotime($atelier['date'])); ?><br>
-                    <span class="font-bold">Heure :</span> <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?><br>
-                    <span class="font-bold">Lieu :</span> <?= htmlspecialchars($atelier['type']); ?>
-                </p>
-                <p class="text-gray-700 mb-6">
-                    <?= htmlspecialchars($atelier['description']); ?>
-                </p>
-                <div class="mt-6">
-                    <a href="reservation_equite.php?id=<?= htmlspecialchars($atelier['id']); ?>" 
-                       class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 w-full">
-                        Réserver ma place
-                    </a>
-                </div>
-            </div>
-        </div>
-    <?php endforeach; ?>
-<?php else: ?>
-    <p class="text-gray-500 text-center">Aucun atelier disponible pour le moment.</p>
-<?php endif; ?>
-
-        </div>
-        <!-- Section des dernières sessions -->
-<div id="past-workshops" class="py-16 bg-white">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
-                Les dernières sessions
-            </h2>
-            <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
-                Retrouvez les ateliers précédents organisés par La Ligne 13.
-            </p>
-        </div>
-
-        <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-            <?php if (!empty($ateliers_passes)): ?>
-                <?php foreach ($ateliers_passes as $index => $atelier): ?>
-                    <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden workshop-card animate-hidden animate-element animate-delay-<?= ($index * 100); ?>">
-                        <div class="h-48 bg-violet relative">
-                            <img src="../src/img/workshop<?= $atelier['id']; ?>.jpg" alt="<?= htmlspecialchars($atelier['nom']); ?>" class="w-full h-full object-cover opacity-70">
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <h3 class="text-2xl font-bold text-white"><?= htmlspecialchars($atelier['nom']); ?></h3>
+                <?php if (!empty($ateliers_futurs)): ?>
+                    <?php foreach ($ateliers_futurs as $index => $atelier): ?>
+                        <div class="bg-white rounded-lg shadow-xl overflow-hidden workshop-card animate-hidden animate-element animate-delay-<?= ($index % 3) * 100; ?>">
+                            <div class="h-48 bg-violet relative">
+                                <img src="../src/img/workshop<?= htmlspecialchars($atelier['id']); ?>.jpg" 
+                                     alt="<?= htmlspecialchars($atelier['nom']); ?>" 
+                                     class="w-full h-full object-cover opacity-70">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <h3 class="text-2xl font-bold text-white">
+                                        <?= htmlspecialchars($atelier['nom']); ?>
+                                    </h3>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-gray-600 mb-4">
+                                    <span class="font-bold">Date :</span> <?= date("d/m/Y", strtotime($atelier['date'])); ?><br>
+                                    <span class="font-bold">Heure :</span> <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?><br>
+                                    <span class="font-bold">Lieu :</span> <?= htmlspecialchars($atelier['type']); ?>
+                                </p>
+                                <p class="text-gray-700 mb-6">
+                                    <?= htmlspecialchars($atelier['description']); ?>
+                                </p>
+                                <div class="mt-6">
+                                    <a href="reservation_equite.php?id=<?= htmlspecialchars($atelier['id']); ?>" 
+                                       class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 w-full">
+                                        Réserver ma place
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                        <div class="p-6">
-                            <p class="text-gray-600 mb-4">
-                                <span class="font-bold">Date :</span> <?= date("d/m/Y", strtotime($atelier['date'])); ?><br>
-                                <span class="font-bold">Heure :</span> <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?><br>
-                                <span class="font-bold">Lieu :</span> <?= htmlspecialchars($atelier['type']); ?>
-                            </p>
-                            <p class="text-gray-700 mb-6">
-                                <?= htmlspecialchars($atelier['description']); ?>
-                            </p>
-                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full text-center">
+                        <p class="text-gray-500 text-lg">Aucun atelier disponible pour le moment.</p>
                     </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p class="text-gray-500 text-center">Aucune session passée disponible.</p>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
-</div>
 
-    </div>
-</div>
+    <!-- Section des dernières sessions -->
+    <div id="past-workshops" class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
+                    Les dernières sessions
+                </h2>
+                <p class="mt-4 text-lg text-gray-600 animate-hidden animate-element animate-delay-100">
+                    Retrouvez les ateliers précédents organisés par La Ligne 13.
+                </p>
+            </div>
 
-
-        </div>
-    </div>
-</div>
-
-                
+            <div class="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
+                <?php if (!empty($ateliers_passes)): ?>
+                    <?php foreach ($ateliers_passes as $index => $atelier): ?>
+                        <div class="bg-gray-100 rounded-lg shadow-xl overflow-hidden workshop-card animate-hidden animate-element animate-delay-<?= ($index % 3) * 100; ?>">
+                            <div class="h-48 bg-violet relative">
+                                <img src="../src/img/workshop<?= $atelier['id']; ?>.jpg" alt="<?= htmlspecialchars($atelier['nom']); ?>" class="w-full h-full object-cover opacity-70">
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <h3 class="text-2xl font-bold text-white"><?= htmlspecialchars($atelier['nom']); ?></h3>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <p class="text-gray-600 mb-4">
+                                    <span class="font-bold">Date :</span> <?= date("d/m/Y", strtotime($atelier['date'])); ?><br>
+                                    <span class="font-bold">Heure :</span> <?= date("H:i", strtotime($atelier['heure_debut'])); ?> - <?= date("H:i", strtotime($atelier['heure_fin'])); ?><br>
+                                    <span class="font-bold">Lieu :</span> <?= htmlspecialchars($atelier['type']); ?>
+                                </p>
+                                <p class="text-gray-700 mb-6">
+                                    <?= htmlspecialchars($atelier['description']); ?>
+                                </p>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-span-full text-center">
+                        <p class="text-gray-500 text-lg">Aucune session passée disponible.</p>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
     <!-- Process Section -->
-    <div class="py-16 bg-white">
+    <div class="py-16 bg-lightgray">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
@@ -493,7 +492,7 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Testimonials Section -->
-    <div class="py-16 bg-lightgray">
+    <div class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
                 <h2 class="text-3xl font-extrabold text-violet sm:text-4xl animate-hidden animate-element">
@@ -529,7 +528,7 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
                         </div>
                     </div>
                     <p class="text-gray-700 italic">
-                        "J'ai été impressionnée par la qualité des ateliers et la pertinence des outils proposés. Nous avons pu adapter notre culture d'entreprise dès le départ pour créer un environnement vraiment inclusif."
+                        "J'ai été impressionnée par la qualité des ateliers et la pertinence des outils proposés. Nous avons pu adapter notre culture d'entreprise dès le départ pour créer un environnement  Nous avons pu adapter notre culture d'entreprise dès le départ pour créer un environnement vraiment inclusif."
                     </p>
                 </div>
             </div>
@@ -537,7 +536,7 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- CTA Section -->
-    <div class="py-16 bg-white">
+    <div class="py-16 bg-lightgray">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="bg-violet rounded-lg shadow-xl overflow-hidden lg:grid lg:grid-cols-2 lg:gap-4 animate-hidden animate-element">
                 <div class="pt-10 pb-12 px-6 sm:pt-16 sm:px-16 lg:py-16 lg:pr-0 xl:py-20 xl:px-20">
@@ -563,31 +562,31 @@ $ateliers_passes = $stmt_past->fetchAll(PDO::FETCH_ASSOC);
     </div>
 
     <!-- Footer -->
-    <footer class="bg-lightgray border-t border-gray-200">
+    <footer class="bg-white border-t border-gray-200">
         <div class="max-w-7xl mx-auto py-12 px-4 overflow-hidden sm:px-6 lg:px-8">
             <nav class="-mx-5 -my-2 flex flex-wrap justify-center" aria-label="Footer">
                 <div class="px-5 py-2">
-                    <a href="index.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="index.php" class="text-base text-gray-600 hover:text-violet">
                         Accueil
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="ateliers.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="ateliers.php" class="text-base text-gray-600 hover:text-violet">
                         Ateliers d'équité
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="coaching.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="coaching.php" class="text-base text-gray-600 hover:text-violet">
                         Coaching
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="ecriture.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="ecriture.php" class="text-base text-gray-600 hover:text-violet">
                         Ateliers d'écriture
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="blog.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="blog.php" class="text-base text-gray-600 hover:text-violet">
                         Blog
                     </a>
                 </div>

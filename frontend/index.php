@@ -353,14 +353,14 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             Contactez-nous
                         </a>
                         <?php if (isset($_SESSION['user_id'])): ?>
-    <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
-        Mon compte
-    </a>
-<?php else: ?>
-    <a href="login.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
-        Connexion
-    </a>
-<?php endif; ?>
+                            <a href="myaccount.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Mon compte
+                            </a>
+                        <?php else: ?>
+                            <a href="login.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
+                                Connexion
+                            </a>
+                        <?php endif; ?>
                     </div>
                     <div class="-mr-2 ml-4 flex items-center sm:hidden">
                         <button type="button" class="mobile-menu-button inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-violet hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-violet" aria-controls="mobile-menu" aria-expanded="false">
@@ -393,6 +393,15 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Contact
                 </a>
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <a href="myaccount.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Mon compte
+                    </a>
+                <?php else: ?>
+                    <a href="login.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                        Connexion
+                    </a>
+                <?php endif; ?>
             </div>
         </div>
     </nav>
@@ -560,6 +569,7 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <text x="100" y="90" text-anchor="middle" fill="#333333" font-size="14" class="station-1">Sensibilisation</text>
                     
                     <circle cx="250" cy="60" r="12" fill="#330c59" class="station-2" />
+                    <text x="250" y="90" text-anchor="middle" fill="#  class="station-2" />
                     <text x="250" y="90" text-anchor="middle" fill="#333333" font-size="14" class="station-2">Équité</text>
                     
                     <circle cx="400" cy="60" r="12" fill="#330c59" class="station-3" />
@@ -579,7 +589,6 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     
                     <g class="symbol">
                         <circle cx="325" cy="30" r="10" stroke="#330c59" stroke-width="2" fill="none" />
-                        <line x1="325" y1="40" x2="325" y2="  stroke-width="2" fill="none" />
                         <line x1="325" y1="40" x2="325" y2="60" stroke="#330c59" stroke-width="2" />
                         <line x1="315" y1="20" x2="335" y2="20" stroke="#330c59" stroke-width="2" />
                     </g>
@@ -611,46 +620,36 @@ $avis = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </p>
             </div>
             
-            <div class="testimonial-carousel animate-hidden animate-element animate-delay-200">
-                
-                    
-            <div class="testimonial-carousel">
-    <div class="testimonial-container">
-        <?php foreach ($avis as $avisItem): ?>
-            <div class="testimonial-slide">
-                <div class="testimonial-card">
-                    <div class="flex items-center mb-4">
-                        <img src="https://randomuser.me/api/portraits/men/<?php echo $avisItem['id_user']; ?>.jpg" alt="Utilisateur" class="w-12 h-12 rounded-full mr-4">
-                        <div>
-                            <h4 class="font-bold text-gray-800">Utilisateur <?php echo $avisItem['id_user']; ?></h4>
-                            <p class="text-sm text-gray-600">Date: <?php echo date("d/m/Y", strtotime($avisItem['date_publication'])); ?></p>
+            <div class="testimonial-carousel animate-hidden animate-element animate-delay-200 relative">
+                <div class="testimonial-container">
+                    <?php foreach ($avis as $avisItem): ?>
+                        <div class="testimonial-slide">
+                            <div class="testimonial-card">
+                                <div class="flex items-center mb-4">
+                                    <img src="https://randomuser.me/api/portraits/men/<?php echo $avisItem['id_user']; ?>.jpg" alt="Utilisateur" class="w-12 h-12 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="font-bold text-gray-800">Utilisateur <?php echo $avisItem['id_user']; ?></h4>
+                                        <p class="text-sm text-gray-600">Date: <?php echo date("d/m/Y", strtotime($avisItem['date_publication'])); ?></p>
+                                    </div>
+                                </div>
+                                <div class="testimonial-quote">
+                                    <p class="text-gray-700"><?php echo htmlspecialchars($avisItem['texte']); ?></p>
+                                </div>
+                                <div class="mt-4 flex">
+                                    <?php
+                                    $note = intval($avisItem['note']);
+                                    for ($i = 1; $i <= 5; $i++) {
+                                        if ($i <= $note) {
+                                            echo '<i class="fas fa-star text-jaune"></i>';
+                                        } else {
+                                            echo '<i class="far fa-star text-jaune"></i>';
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="testimonial-quote">
-                        <p class="text-gray-700"><?php echo htmlspecialchars($avisItem['texte']); ?></p>
-                    </div>
-                    <div class="mt-4 flex">
-                        <?php
-                        $note = intval($avisItem['note']);
-                        for ($i = 1; $i <= 5; $i++) {
-                            if ($i <= $note) {
-                                echo '<i class="fas fa-star text-jaune"></i>';
-                            } else {
-                                echo '<i class="far fa-star text-jaune"></i>';
-                            }
-                        }
-                        ?>
-                    </div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-</div>
-                   
-                    
-                    
-                    
-                   
+                    <?php endforeach; ?>
                 </div>
                 
                 <!-- Carousel Controls -->
