@@ -157,6 +157,9 @@ function formatEventType($type) {
                             <a href="myaccount.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ml-4">
                                 Mon compte
                             </a>
+                            <form action="../backend/user/DisconnectUser.php">
+                                <input type="submit" value="Déconnexion">
+                            </form>
                         <?php else: ?>
                             <a href="login.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium ml-4">
                                 Connexion
