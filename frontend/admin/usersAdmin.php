@@ -11,20 +11,19 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['
     // Pour le développement, nous ne redirigeons pas
 }
 
-// Récupérer tous les ateliers d'écriture
-$query = "SELECT * FROM atelier_ecriture ORDER BY id DESC";
+// Récupérer tous les utilisateurs
+$query = "SELECT * FROM users ORDER BY id DESC";
 $stmt = $pdo->prepare($query);
 $stmt->execute();
-$workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-<<<<<<< Updated upstream
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration Ateliers d'Écriture - La Ligne 13</title>
+    <title>Administration Utilisateurs - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script>
@@ -65,29 +64,15 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             transition-delay: 0.2s;
         }
         
-        /* Workshop card styling */
-        .workshop-card {
+        /* User card styling */
+        .user-card {
             transition: all 0.3s ease;
         }
-        .workshop-card:hover {
+        .user-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
-=======
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Atelier Ecriture - Admin</title>
-    <script>
-        function toggleEdit(postId) {
-            let inputs = document.querySelectorAll('#post-' + postId + ' .editable');
-            inputs.forEach(function(input) {
-                input.disabled = !input.disabled;
-            });
-        }
-    </script>
->>>>>>> Stashed changes
 </head>
 <body class="bg-lightgray text-darkgray">
     <div class="flex min-h-screen">
@@ -170,50 +155,52 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </a>
             </div>
         </aside>
-
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
             <div class="flex justify-between items-center mb-8">
                 <div>
-                    <h1 class="text-3xl font-bold text-violet">Gestion des Ateliers d'Écriture</h1>
-                    <p class="text-gray-600 mt-2">Créez, modifiez et supprimez les ateliers d'écriture</p>
+                    <h1 class="text-3xl font-bold text-violet">Gestion des Utilisateurs</h1>
+                    <p class="text-gray-600 mt-2">Gérez les comptes utilisateurs et leurs permissions</p>
                 </div>
-                <button class="bg-violet text-white px-4 py-2 rounded-lg hover:bg-violet/90 transition-colors flex items-center" id="newWorkshopBtn">
+                <button class="bg-violet text-white px-4 py-2 rounded-lg hover:bg-violet/90 transition-colors flex items-center" id="newUserBtn">
                     <i class="fas fa-plus mr-2"></i>
-                    Nouvel atelier
+                    Nouvel utilisateur
                 </button>
             </div>
             
-            <!-- New Workshop Form (Hidden by default) -->
-            <div id="newWorkshopForm" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden animate-hidden">
-                <h2 class="text-xl font-bold text-violet mb-4">Créer un nouvel atelier d'écriture</h2>
+            <!-- New User Form (Hidden by default) -->
+            <div id="newUserForm" class="bg-white rounded-lg shadow-md p-6 mb-8 hidden animate-hidden">
+                <h2 class="text-xl font-bold text-violet mb-4">Créer un nouvel utilisateur</h2>
                 
-                <form action="../../backend/generators/WritingWorkshopGenerator.php" method="post" class="space-y-4">
-                    <div>
-                        <label for="titre" class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
-                        <input type="text" id="titre" name="titre" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
-                    </div>
-                    
-                    <div>
-                        <label for="description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea id="description" name="description" rows="6" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent"></textarea>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <form action="../../backend/generators/UserGenerator.php" method="post" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                            <input type="date" id="date" name="date" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                            <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                            <input type="text" id="nom" name="nom" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
                         </div>
                         
                         <div>
-                            <label for="start_time" class="block text-sm font-medium text-gray-700 mb-1">Heure de début</label>
-                            <input type="time" id="start_time" name="start_time" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                            <label for="prenom" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+                            <input type="text" id="prenom" name="prenom" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
                         </div>
-                        
-                        <div>
-                            <label for="finish_time" class="block text-sm font-medium text-gray-700 mb-1">Heure de fin</label>
-                            <input type="time" id="finish_time" name="finish_time" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
-                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                        <input type="password" id="password" name="password" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                    </div>
+                    
+                    <div>
+                        <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Rôle</label>
+                        <select id="role" name="role" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                            <option value="user">Utilisateur</option>
+                            <option value="admin">Administrateur</option>
+                        </select>
                     </div>
                     
                     <div class="flex justify-end space-x-3">
@@ -231,11 +218,17 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <div class="bg-white rounded-lg shadow-md p-4 mb-8 animate-hidden animate-element">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <div class="relative flex-1">
-                        <input type="text" placeholder="Rechercher un atelier..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                        <input type="text" placeholder="Rechercher un utilisateur..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
                         <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
                     </div>
                     
-                    <div class="flex items-center">
+                    <div class="flex items-center space-x-4">
+                        <select class="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent">
+                            <option value="">Tous les rôles</option>
+                            <option value="admin">Administrateur</option>
+                            <option value="user">Utilisateur</option>
+                        </select>
+                        
                         <button class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
                             <i class="fas fa-filter mr-2"></i>
                             Filtrer
@@ -244,60 +237,88 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 </div>
             </div>
             
-            <!-- Workshop List -->
+            <!-- Users List -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <?php if (empty($workshops)): ?>
+                <?php if (empty($users)): ?>
                     <div class="col-span-3 text-center py-8">
-                        <p class="text-gray-500">Aucun atelier d'écriture trouvé. Créez votre premier atelier !</p>
+                        <p class="text-gray-500">Aucun utilisateur trouvé. Créez votre premier utilisateur !</p>
                     </div>
                 <?php else: ?>
-                    <?php foreach ($workshops as $index => $workshop): ?>
-                        <div class="bg-white rounded-lg shadow-md overflow-hidden workshop-card animate-hidden animate-element <?= $index % 2 ? 'animate-delay-100' : ''; ?>">
-                            <div class="h-24 bg-mauve relative">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <h3 class="text-xl font-bold text-violet text-center px-4"><?= htmlspecialchars($workshop['titre']); ?></h3>
-                                </div>
+                    <!-- User Card 1 -->
+                    <div class="bg-white p-4 rounded-lg border hover:shadow-lg transition-shadow user-card animate-hidden animate-element">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-violet rounded-full flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
                             </div>
-                            <div class="p-4">
-                                <p class="text-gray-600 text-sm mb-2">
-                                    <i class="far fa-calendar-alt mr-2"></i>
-                                    <?= date('d/m/Y', strtotime($workshop['date'])); ?>
-                                </p>
-                                <p class="text-gray-600 text-sm mb-4">
-                                    <i class="far fa-clock mr-2"></i>
-                                    <?= substr($workshop['heure_debut'], 0, 5); ?> - <?= substr($workshop['heure_fin'], 0, 5); ?>
-                                </p>
-                                <p class="text-gray-700 mb-4 line-clamp-3">
-                                    <?= htmlspecialchars(substr($workshop['description'], 0, 150)) . (strlen($workshop['description']) > 150 ? '...' : ''); ?>
-                                </p>
-                                <div class="flex justify-between items-center">
-                                    <a href="../writing-workshops.php" class="text-violet hover:text-violet/80 transition-colors" target="_blank">
-                                        <i class="fas fa-eye mr-1"></i>
-                                        Voir
-                                    </a>
-                                    <div class="flex space-x-2">
-                                        <button class="text-blue-600 hover:text-blue-800 transition-colors edit-workshop" data-id="<?= $workshop['id']; ?>">
-                                            <i class="fas fa-edit"></i>
-                                        </button>
-                                        <button class="text-red-600 hover:text-red-800 transition-colors delete-workshop" data-id="<?= $workshop['id']; ?>">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-violet">Jean Dupont</h4>
+                                <p class="text-sm text-gray-600">Admin</p>
+                                <p class="text-xs text-gray-500">Inscrit le 01/03/2024</p>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <button class="text-blue-600 hover:text-blue-800 edit-user" data-id="1">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="1">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
-                    <?php endforeach; ?>
+                    </div>
+
+                    <!-- User Card 2 -->
+                    <div class="bg-white p-4 rounded-lg border hover:shadow-lg transition-shadow user-card animate-hidden animate-element animate-delay-100">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-mauve rounded-full flex items-center justify-center text-violet">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-violet">Marie Curie</h4>
+                                <p class="text-sm text-gray-600">Utilisateur</p>
+                                <p class="text-xs text-gray-500">Inscrit le 28/02/2024</p>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <button class="text-blue-600 hover:text-blue-800 edit-user" data-id="2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="2">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- User Card 3 -->
+                    <div class="bg-white p-4 rounded-lg border hover:shadow-lg transition-shadow user-card animate-hidden animate-element animate-delay-200">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-rose rounded-full flex items-center justify-center text-violet">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="font-semibold text-violet">Albert Einstein</h4>
+                                <p class="text-sm text-gray-600">Utilisateur</p>
+                                <p class="text-xs text-gray-500">Inscrit le 25/02/2024</p>
+                            </div>
+                            <div class="flex flex-col space-y-2">
+                                <button class="text-blue-600 hover:text-blue-800 edit-user" data-id="3">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-600 hover:text-red-800 delete-user" data-id="3">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 <?php endif; ?>
             </div>
         </main>
     </div>
 
-<<<<<<< Updated upstream
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 max-w-md w-full">
             <h3 class="text-xl font-bold text-violet mb-4">Confirmer la suppression</h3>
-            <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer cet atelier d'écriture ? Cette action est irréversible.</p>
+            <p class="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible.</p>
             <div class="flex justify-end space-x-3">
                 <button id="cancelDelete" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
                     Annuler
@@ -336,77 +357,52 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 );
             }
             
-            // New Workshop Form Toggle
-            const newWorkshopBtn = document.getElementById('newWorkshopBtn');
-            const newWorkshopForm = document.getElementById('newWorkshopForm');
+            // New User Form Toggle
+            const newUserBtn = document.getElementById('newUserBtn');
+            const newUserForm = document.getElementById('newUserForm');
             const cancelBtn = document.getElementById('cancelBtn');
             
-            newWorkshopBtn.addEventListener('click', function() {
-                newWorkshopForm.classList.remove('hidden');
-                newWorkshopForm.classList.add('animate-visible');
-                newWorkshopBtn.classList.add('hidden');
+            newUserBtn.addEventListener('click', function() {
+                newUserForm.classList.remove('hidden');
+                newUserForm.classList.add('animate-visible');
+                newUserBtn.classList.add('hidden');
             });
             
             cancelBtn.addEventListener('click', function() {
-                newWorkshopForm.classList.add('hidden');
-                newWorkshopForm.classList.remove('animate-visible');
-                newWorkshopBtn.classList.remove('hidden');
+                newUserForm.classList.add('hidden');
+                newUserForm.classList.remove('animate-visible');
+                newUserBtn.classList.remove('hidden');
             });
             
             // Delete Modal
             const deleteModal = document.getElementById('deleteModal');
-            const deleteButtons = document.querySelectorAll('.delete-workshop');
+            const deleteButtons = document.querySelectorAll('.delete-user');
             const cancelDelete = document.getElementById('cancelDelete');
             const confirmDelete = document.getElementById('confirmDelete');
-            let workshopIdToDelete = null;
+            let userIdToDelete = null;
             
             deleteButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    workshopIdToDelete = this.getAttribute('data-id');
+                    userIdToDelete = this.getAttribute('data-id');
                     deleteModal.classList.remove('hidden');
                 });
             });
             
             cancelDelete.addEventListener('click', function() {
                 deleteModal.classList.add('hidden');
-                workshopIdToDelete = null;
+                userIdToDelete = null;
             });
             
             confirmDelete.addEventListener('click', function() {
-                if (workshopIdToDelete) {
+                if (userIdToDelete) {
                     // Send delete request to server
                     // For now, just close the modal
                     deleteModal.classList.add('hidden');
-                    alert('Atelier d\'écriture supprimé avec succès !');
+                    alert('Utilisateur supprimé avec succès !');
                     // Reload the page or remove the element from DOM
                 }
             });
         });
     </script>
-=======
-
-<div class="workshops">
-    <?php foreach ($workshops as $workshop): ?>
-        <div class="workshop">
-            <?php
-            $heure_debut = date("Y-m-d\TH:i", strtotime($workshop["heure_debut"]));
-            $heure_fin = date("Y-m-d\TH:i", strtotime($workshop["heure_fin"]));
-            ?>
-            <form action="../../backend/edit/EditWritingWorkshop.php" method="post" id="post-<?php echo $workshop['id']; ?>">
-                <input type="hidden" name="id" value="<?php echo $workshop['id']; ?>">
-                <input class="editable" name="titre" disabled value="<?php echo $workshop["titre"] ?>">
-                <input class="editable" name="description" disabled value="<?php echo $workshop["description"] ?>">
-                <input type="date" class="editable" disabled name="date" value="<?php echo $workshop["date"] ?>">
-                <input type="datetime-local" class="editable" disabled name="heure_debut" value="<?php echo $heure_debut ?>">
-                <input type="datetime-local" class="editable" disabled name="heure_fin" value="<?php echo $heure_fin ?>">
-                <input type="submit" class="editable" disabled value="envoyer">
-            </form>
-            <button onclick="toggleEdit(<?php echo $workshop["id"]?>)">Modifier</button>
-            <a href="../../backend/delete/DeleteWritingWorkshop.php?id=<?php echo $workshop["id"]; ?>">Supprimer</a>
-        </div>
-        <br>
-    <?php endforeach; ?>
-</div>
->>>>>>> Stashed changes
 </body>
 </html>

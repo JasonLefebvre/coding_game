@@ -136,14 +136,14 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <a href="blog.php" class="border-violet text-violet inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                             Blog
                         </a>
-                        <a href="about.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="about.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             À propos
                         </a>
                     </div>
                 </div>
                 <div class="flex items-center">
                     <div class="hidden sm:flex sm:items-center">
-                        <a href="contact.html" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
+                        <a href="contact.php" class="bg-violet text-white hover:bg-violet/90 px-4 py-2 rounded-md text-sm font-medium">
                             Contactez-nous
                         </a>
                         <?php if (isset($_SESSION['user_id'])): ?>
@@ -184,12 +184,13 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <a href="blog.php" class="bg-lightgray border-violet text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Blog
                 </a>
-                <a href="about.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="about.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     À propos
                 </a>
-                <a href="contact.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="contact.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Contact
                 </a>
+
                 <?php if (isset($_SESSION['user_id'])): ?>
                     <a href="myaccount.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                         Mon compte
@@ -202,6 +203,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </nav>
+
 
     <!-- Hero Section -->
     <div class="hero-pattern flex items-center">

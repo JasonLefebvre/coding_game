@@ -200,7 +200,7 @@
                         <a href="ateliers.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Ateliers d'équité
                         </a>
-                        <a href="coaching.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
+                        <a href="coaching.php" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
                             Coaching
                         </a>
                         <a href="ecriture.html" class="border-transparent text-gray-600 hover:text-violet inline-flex items-center px-1 pt-1 border-b-2 border-transparent hover:border-violet text-sm font-medium">
@@ -237,7 +237,7 @@
                 <a href="ateliers.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Ateliers d'équité
                 </a>
-                <a href="coaching.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
+                <a href="coaching.php" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
                     Coaching
                 </a>
                 <a href="ecriture.html" class="border-transparent text-gray-600 hover:bg-gray-100 hover:border-violet hover:text-violet block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
@@ -510,7 +510,7 @@
                     </a>
                 </div>
                 <div class="px-5 py-2">
-                    <a href="coaching.html" class="text-base text-gray-600 hover:text-violet">
+                    <a href="coaching.php" class="text-base text-gray-600 hover:text-violet">
                         Coaching
                     </a>
                 </div>
