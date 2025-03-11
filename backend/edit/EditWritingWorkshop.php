@@ -11,8 +11,9 @@ $edited_heure_debut = $_POST['heure_debut'];
 $edited_heure_fin = $_POST['heure_fin'];
 $edited_id = intval($_POST["id"]);
 
-echo "Heure de début : " . $edited_heure_debut . "<br>";
 
 $sql = "UPDATE atelier_ecriture SET titre = ?, description = ?, date = ?, heure_debut = ?, heure_fin = ? WHERE id = ?";
 $stmt = $pdo->prepare($sql);
 $stmt->execute([$edited_name, $edited_description, $edited_date, $edited_heure_debut, $edited_heure_fin, $edited_id]);
+
+header("Location: ../../frontend/admin/writingAdmin.php");

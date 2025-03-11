@@ -22,7 +22,6 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-<<<<<<< Updated upstream
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration Ateliers d'Équité - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -74,20 +73,14 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
-=======
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Atelier Equité - Admin</title>
     <script>
-        function toggleEdit(postId) {
-            let inputs = document.querySelectorAll('#post-' + postId + ' .editable');
+        function toggleEdit(formId) {
+            let inputs = document.querySelectorAll('#editWorkshopForm .editable');
             inputs.forEach(function(input) {
                 input.disabled = !input.disabled;
             });
         }
     </script>
->>>>>>> Stashed changes
 </head>
 <body class="bg-lightgray text-darkgray">
     <div class="flex min-h-screen">
@@ -171,7 +164,6 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </aside>
 
-<<<<<<< Updated upstream
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8">
             <div class="flex justify-between items-center mb-8">
@@ -330,6 +322,64 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </div>
     </div>
 
+    <!-- Edit Workshop Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full">
+            <h3 class="text-xl font-bold text-violet mb-4">Modifier l'atelier d'équité</h3>
+            <div class="workshops">
+                <div class="workshop">
+                    <form id="editWorkshopForm" action="../../backend/edit/EditEquityWorkshop.php" method="post" class="space-y-4">
+                        <input type="hidden" name="id" id="edit_id">
+                        
+                        <div>
+                            <label for="edit_nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+                            <input type="text" id="edit_nom" name="nom" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                        </div>
+                        
+                        <div>
+                            <label for="edit_description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="edit_description" name="description" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="edit_type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                            <input type="text" id="edit_type" name="type" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label for="edit_date" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
+                                <input type="date" id="edit_date" name="date" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                            </div>
+                            
+                            <div>
+                                <label for="edit_heure_debut" class="block text-sm font-medium text-gray-700 mb-1">Heure de début</label>
+                                <input type="datetime-local" id="edit_heure_debut" name="heure_debut" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                            </div>
+                            
+                            <div>
+                                <label for="edit_heure_fin" class="block text-sm font-medium text-gray-700 mb-1">Heure de fin</label>
+                                <input type="datetime-local" id="edit_heure_fin" name="heure_fin" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="button" onclick="toggleEdit('edit')" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                Modifier
+                            </button>
+                            <button type="submit" class="editable px-4 py-2 bg-violet text-white rounded-md hover:bg-violet/90 transition-colors" disabled>
+                                Enregistrer
+                            </button>
+                            <button type="button" id="cancelEdit" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Scroll animation
         document.addEventListener('DOMContentLoaded', function() {
@@ -402,60 +452,84 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     // Reload the page or remove the element from DOM
                 }
             });
+
+            // Edit Modal
+            const editModal = document.getElementById('editModal');
+            const editButtons = document.querySelectorAll('.edit-workshop');
+            const cancelEdit = document.getElementById('cancelEdit');
+            const editForm = document.getElementById('editWorkshopForm');
+
+            // Données des ateliers
+            const workshops = <?= json_encode($workshops) ?>;
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const workshopId = this.getAttribute('data-id');
+                    console.log('ID de l\'atelier:', workshopId);
+                    // Convertir l'ID en nombre pour la comparaison
+                    const workshop = workshops.find(w => w.id === parseInt(workshopId));
+                    console.log('Atelier trouvé:', workshop);
+                    
+                    if (workshop) {
+                        // Formater la date et les heures pour les champs datetime-local
+                        const date = workshop.date;
+                        const heureDebut = workshop.heure_debut;
+                        const heureFin = workshop.heure_fin;
+
+                        console.log('Date:', date);
+                        console.log('Heure début:', heureDebut);
+                        console.log('Heure fin:', heureFin);
+
+                        // Remplir les champs du formulaire
+                        document.getElementById('edit_id').value = workshop.id;
+                        document.getElementById('edit_nom').value = workshop.nom;
+                        document.getElementById('edit_type').value = workshop.type;
+                        document.getElementById('edit_description').value = workshop.description;
+                        document.getElementById('edit_date').value = date;
+                        
+                        // Formater les heures pour les champs datetime-local
+                        const dateTimeDebut = date + 'T' + heureDebut;
+                        const dateTimeFin = date + 'T' + heureFin;
+                        
+                        console.log('DateTime début:', dateTimeDebut);
+                        console.log('DateTime fin:', dateTimeFin);
+                        
+                        document.getElementById('edit_heure_debut').value = dateTimeDebut;
+                        document.getElementById('edit_heure_fin').value = dateTimeFin;
+                        
+                        // Réinitialiser l'état des champs (tous désactivés)
+                        const editableInputs = document.querySelectorAll('#editWorkshopForm .editable');
+                        editableInputs.forEach(input => {
+                            input.disabled = true;
+                        });
+                        
+                        // Afficher le modal
+                        editModal.classList.remove('hidden');
+                    }
+                });
+            });
+
+            cancelEdit.addEventListener('click', function() {
+                editModal.classList.add('hidden');
+                // Réinitialiser l'état des champs
+                const editableInputs = document.querySelectorAll('#editWorkshopForm .editable');
+                editableInputs.forEach(input => {
+                    input.disabled = true;
+                });
+            });
+
+            // Fermer le modal si on clique en dehors
+            window.addEventListener('click', function(event) {
+                if (event.target === editModal) {
+                    editModal.classList.add('hidden');
+                    // Réinitialiser l'état des champs
+                    const editableInputs = document.querySelectorAll('#editWorkshopForm .editable');
+                    editableInputs.forEach(input => {
+                        input.disabled = true;
+                    });
+                }
+            });
         });
     </script>
-=======
-<form action="../../backend/generators/EquityWorkshopGenerator.php" method="post">
-    <div>
-        <label for="nom">Nom</label>
-        <input type="text" name="nom" required>
-    </div>
-    <div>
-        <label for="description">Description</label>
-        <textarea name="description" required></textarea>
-    </div>
-    <div>
-        <label for="date">Date</label>
-        <input type="date" name="date" required>
-    </div>
-    <div>
-        <label for="date">Heure de début</label>
-        <input type="datetime-local" name="start_time" required>
-    </div>
-    <div>
-        <label for="date">Heure de fin</label>
-        <input type="datetime-local" name="finish_time" required>
-    </div>
-    <div>
-        <label for="type">Type</label>
-        <input type="text" name="type" required>
-    </div>
-    <button type="submit">Ajouter</button>
-</form>
-
-<div class="workshops">
-    <?php foreach ($workshops as $workshop): ?>
-        <div class="workshop">
-            <?php
-            $heure_debut = date("Y-m-d\TH:i", strtotime($workshop["heure_debut"]));
-            $heure_fin = date("Y-m-d\TH:i", strtotime($workshop["heure_fin"]));
-            ?>
-            <form action="../../backend/edit/EditEquityWorkshop.php" method="post" id="post-<?php echo $workshop['id']; ?>">
-                <input type="hidden" name="id" value="<?php echo $workshop['id']; ?>">
-                <input class="editable" name="nom" disabled value="<?php echo $workshop["nom"] ?>">
-                <input class="editable" name="description" disabled value="<?php echo $workshop["description"] ?>">
-                <input type="date" class="editable" disabled name="date" value="<?php echo $workshop["date"] ?>">
-                <input type="datetime-local" class="editable" disabled name="heure_debut" value="<?php echo $heure_debut ?>">
-                <input type="datetime-local" class="editable" disabled name="heure_fin" value="<?php echo $heure_fin ?>">
-                <input class="editable" name="type" disabled value="<?php echo $workshop["type"] ?>">
-                <input type="submit" class="editable" disabled value="envoyer">
-            </form>
-            <button onclick="toggleEdit(<?php echo $workshop["id"]?>)">Modifier</button>
-            <a href="../../backend/delete/DeleteEquityWorkshop.php?id=<?php echo $workshop["id"]; ?>">Supprimer</a>
-        </div>
-        <br>
-    <?php endforeach; ?>
-</div>
->>>>>>> Stashed changes
 </body>
 </html>

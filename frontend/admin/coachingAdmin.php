@@ -22,7 +22,6 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-<<<<<<< Updated upstream
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Administration Coaching - La Ligne 13</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -74,7 +73,6 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
     </style>
-=======
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -87,7 +85,6 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
             });
         }
     </script>
->>>>>>> Stashed changes
 </head>
 <body class="bg-lightgray text-darkgray">
     <div class="flex min-h-screen">
@@ -286,7 +283,6 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 
-<<<<<<< Updated upstream
     <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
         <div class="bg-white rounded-lg p-6 max-w-md w-full">
@@ -299,6 +295,50 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <button id="confirmDelete" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors">
                     Supprimer
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Coaching Modal -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-6 max-w-2xl w-full">
+            <h3 class="text-xl font-bold text-violet mb-4">Modifier l'offre de coaching</h3>
+            <div class="coachings">
+                <div class="coaching">
+                    <form id="editCoachingForm" action="../../backend/edit/EditCoaching.php" method="post" class="space-y-4">
+                        <input type="hidden" name="post_id" id="edit_id">
+                        
+                        <div>
+                            <label for="edit_titre" class="block text-sm font-medium text-gray-700 mb-1">Titre</label>
+                            <input type="text" id="edit_titre" name="titre" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                        </div>
+                        
+                        <div>
+                            <label for="edit_description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                            <textarea id="edit_description" name="description" rows="6" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled></textarea>
+                        </div>
+                        
+                        <div>
+                            <label for="edit_categorie" class="block text-sm font-medium text-gray-700 mb-1">Catégorie</label>
+                            <select id="edit_categorie" name="categorie" class="editable w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-violet focus:border-transparent" disabled>
+                                <option value="individuel">Individuel</option>
+                                <option value="collectif">Collectif</option>
+                            </select>
+                        </div>
+                        
+                        <div class="flex justify-end space-x-3 mt-6">
+                            <button type="button" onclick="toggleEdit('edit')" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+                                Modifier
+                            </button>
+                            <button type="submit" class="editable px-4 py-2 bg-violet text-white rounded-md hover:bg-violet/90 transition-colors" disabled>
+                                Enregistrer
+                            </button>
+                            <button type="button" id="cancelEdit" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors">
+                                Annuler
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -375,28 +415,64 @@ $coachings = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     // Reload the page or remove the element from DOM
                 }
             });
+
+            // Edit Modal
+            const editModal = document.getElementById('editModal');
+            const editButtons = document.querySelectorAll('.edit-coaching');
+            const cancelEdit = document.getElementById('cancelEdit');
+            const editForm = document.getElementById('editCoachingForm');
+
+            // Données des coachings
+            const coachings = <?= json_encode($coachings) ?>;
+
+            editButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const coachingId = this.getAttribute('data-id');
+                    console.log('ID du coaching:', coachingId);
+                    // Convertir l'ID en nombre pour la comparaison
+                    const coaching = coachings.find(c => c.id === parseInt(coachingId));
+                    console.log('Coaching trouvé:', coaching);
+                    
+                    if (coaching) {
+                        // Remplir les champs du formulaire
+                        document.getElementById('edit_id').value = coaching.id;
+                        document.getElementById('edit_titre').value = coaching.titre;
+                        document.getElementById('edit_description').value = coaching.description;
+                        document.getElementById('edit_categorie').value = coaching.categorie;
+                        
+                        // Réinitialiser l'état des champs (tous désactivés)
+                        const editableInputs = document.querySelectorAll('#editCoachingForm .editable');
+                        editableInputs.forEach(input => {
+                            input.disabled = true;
+                        });
+                        
+                        // Afficher le modal
+                        editModal.classList.remove('hidden');
+                    }
+                });
+            });
+
+            cancelEdit.addEventListener('click', function() {
+                editModal.classList.add('hidden');
+                // Réinitialiser l'état des champs
+                const editableInputs = document.querySelectorAll('#editCoachingForm .editable');
+                editableInputs.forEach(input => {
+                    input.disabled = true;
+                });
+            });
+
+            // Fermer le modal si on clique en dehors
+            window.addEventListener('click', function(event) {
+                if (event.target === editModal) {
+                    editModal.classList.add('hidden');
+                    // Réinitialiser l'état des champs
+                    const editableInputs = document.querySelectorAll('#editCoachingForm .editable');
+                    editableInputs.forEach(input => {
+                        input.disabled = true;
+                    });
+                }
+            });
         });
     </script>
-=======
-<div class="coachings">
-    <?php foreach ($coachings as $coaching): ?>
-        <div class="coaching">
-            <form action="../../backend/edit/EditCoaching.php" method="post" id="post-<?php echo $coaching['id']; ?>">
-                <input type="hidden" name="post_id" value="<?php echo $coaching['id']; ?>">
-                <input class="editable" name="titre" disabled value="<?php echo $coaching["titre"] ?>">
-                <input class="editable" disabled name="description" value="<?php echo $coaching["description"] ?>">
-                <select name="categorie" class="editable" disabled>
-                    <option selected value="<?php echo $coaching["categorie"] ?>"><?php echo $coaching["categorie"] ?></option>
-                    <option value="<?php echo ($coaching["categorie"] == 'individuel') ? 'collectif' : 'Individuel';?>"><?php echo ($coaching["categorie"] == 'individuel') ? 'Collectif' : 'Individuel';?></option>
-                </select>
-                <input type="submit" class="editable" disabled value="envoyer">
-            </form>
-            <button onclick="toggleEdit(<?php echo $coaching["id"]?>)">Modifier</button>
-            <a href="../../backend/delete/DeleteCoaching.php?id=<?php echo $coaching["id"]; ?>">Supprimer</a>
-        </div>
-        <br>
-    <?php endforeach; ?>
-</div>
->>>>>>> Stashed changes
 </body>
 </html>
