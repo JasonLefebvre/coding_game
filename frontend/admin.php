@@ -82,52 +82,58 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['
         <aside class="w-64 bg-violet text-white fixed h-full overflow-y-auto">
             <div class="p-6">
                 <div class="flex items-center justify-center mb-8">
-                    <img src="../src/img/logo.jpg" alt="Logo Ligne 13" class="h-12 w-auto bg-white rounded-full p-1">
+                    <img src="../../src/img/logo.jpg" alt="Logo Ligne 13" class="h-12 w-auto bg-white rounded-full p-1">
                     <h1 class="text-xl font-bold ml-3">Administration</h1>
                 </div>
                 
                 <nav>
                     <ul class="space-y-2">
                         <li>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="../admin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
                                 <i class="fas fa-tachometer-alt w-6"></i>
                                 <span class="ml-3">Tableau de bord</span>
                             </a>
                         </li>
                         <li>
-                            <a href="admin/blogAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="blogAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
                                 <i class="fas fa-blog w-6"></i>
                                 <span class="ml-3">Blog</span>
                             </a>
                         </li>
                         <li>
-                            <a href="admin/coachingAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="coachingAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
                                 <i class="fas fa-chalkboard-teacher w-6"></i>
                                 <span class="ml-3">Coaching</span>
                             </a>
                         </li>
                         <li>
-                            <a href="admin/writingAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="writingAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
                                 <i class="fas fa-pen-fancy w-6"></i>
                                 <span class="ml-3">Ateliers d'écriture</span>
                             </a>
                         </li>
                         <li>
-                            <a href="admin/equityAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="equityAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
                                 <i class="fas fa-balance-scale w-6"></i>
                                 <span class="ml-3">Ateliers d'équité</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="usersAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
                                 <i class="fas fa-users w-6"></i>
                                 <span class="ml-3">Utilisateurs</span>
                             </a>
                         </li>
                         <li>
-                            <a href="#" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                            <a href="appointmentsAdmin.php" class="flex items-center px-4 py-3 rounded-lg bg-violet/80 transition-colors">
                                 <i class="fas fa-calendar-alt w-6"></i>
                                 <span class="ml-3">Rendez-vous</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="availabilityAdmin.php" class="flex items-center px-4 py-3 rounded-lg hover:bg-violet/80 transition-colors">
+                                <i class="fas fa-clock w-6"></i>
+                                <span class="ml-3">Disponibilités</span>
                             </a>
                         </li>
                         <li>
@@ -141,11 +147,11 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['is_admin']) || $_SESSION['
             </div>
             
             <div class="p-6 border-t border-violet/30 mt-6">
-                <a href="index.php" class="flex items-center text-white hover:text-jaune transition-colors">
+                <a href="../frontend/index.php" class="flex items-center text-white hover:text-jaune transition-colors">
                     <i class="fas fa-arrow-left mr-2"></i>
                     <span>Retour au site</span>
                 </a>
-                <a href="logout.php" class="flex items-center text-white hover:text-jaune transition-colors mt-4">
+                <a href="../backend/DisconnectUser.php" class="flex items-center text-white hover:text-jaune transition-colors mt-4">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     <span>Déconnexion</span>
                 </a>

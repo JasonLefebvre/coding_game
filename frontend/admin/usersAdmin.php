@@ -145,11 +145,11 @@ $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
             
             <div class="p-6 border-t border-violet/30 mt-6">
-                <a href="../index.php" class="flex items-center text-white hover:text-jaune transition-colors">
+            <a href="../frontend/index.php" class="flex items-center text-white hover:text-jaune transition-colors">
                     <i class="fas fa-arrow-left mr-2"></i>
                     <span>Retour au site</span>
                 </a>
-                <a href="../logout.php" class="flex items-center text-white hover:text-jaune transition-colors mt-4">
+                <a href="../backend/DisconnectUser.php" class="flex items-center text-white hover:text-jaune transition-colors mt-4">
                     <i class="fas fa-sign-out-alt mr-2"></i>
                     <span>Déconnexion</span>
                 </a>
