@@ -32,6 +32,8 @@ if (!$user) {
         $_SESSION['isVerified'] = $user['is_verified'];
         $_SESSION['role'] = $user['role_user'];
 
+        setcookie("user", $user["id"], time() + (86400 * 30));
+
         if ($user['role_user'] == "admin") {
             header("Location: ../admin.php");
         }

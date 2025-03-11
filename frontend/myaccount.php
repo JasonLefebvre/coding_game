@@ -94,6 +94,8 @@ foreach ($sessions as $session) {
                 <div class="flex items-center">
                     <a href="contact.html" class="bg-violet text-white px-4 py-2 rounded-md text-sm font-medium">Contactez-nous</a>
                     <a href="myaccount.php" class="ml-4 text-violet font-medium">Mon compte</a>
+                    <!-- TODO : a revoir, c'est juste pour tester -->
+                    <a href="../backend/user/DisconnectUser.php">Déconnexion</a>
                 </div>
             </div>
         </div>
