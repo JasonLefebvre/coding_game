@@ -116,7 +116,7 @@ session_start();
                 <h3 class="text-2xl font-bold text-violet">Gestion du Blog</h3>
                 <div class="bg-white p-5 rounded-lg shadow mt-5">
                     <h4 class="text-xl font-bold">Créer un post</h4>
-                    <form action="../backend/blog/PostGenerator.php" method="post" class="mt-3">
+                    <form action="../backend/generators/PostGenerator.php" method="post" class="mt-3">
                         <label class="block text-darkgray">Titre</label>
                         <input name="titre" type="text" required class="w-full p-2 border border-gray-300 rounded mt-1">
                         <label class="block text-darkgray mt-3">Contenu</label>
@@ -131,7 +131,7 @@ session_start();
                 <h3 class="text-2xl font-bold text-violet">Gestion des Coachings</h3>
                 <div class="bg-white p-5 rounded-lg shadow mt-5">
                     <h4 class="text-xl font-bold">Créer un coaching</h4>
-                    <form action="../backend/blog/CoachingGenerator.php" method="post" class="mt-3">
+                    <form action="../backend/generators/CoachingGenerator.php" method="post" class="mt-3">
                         <label class="block text-darkgray">Titre</label>
                         <input name="titre" type="text" required class="w-full p-2 border border-gray-300 rounded mt-1">
                         <label class="block text-darkgray mt-3">Catégorie</label>
@@ -146,7 +146,7 @@ session_start();
                 </div>
             </section>
 
-            <form action="../backend/blog/WritingWorkshopGenerator.php" method="post">
+            <form action="../backend/generators/WritingWorkshopGenerator.php" method="post">
                 <div>
                     <label for="titre">Titre</label>
                     <input type="text" name="titre" required>
@@ -170,7 +170,7 @@ session_start();
                 <button type="submit">Ajouter</button>
             </form>
 
-            <form action="../backend/blog/EquityWorkshopGenerator.php" method="post">
+            <form action="../backend/generators/EquityWorkshopGenerator.php" method="post">
                 <div>
                     <label for="nom">Nom</label>
                     <input type="text" name="name" required>

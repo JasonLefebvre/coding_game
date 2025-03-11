@@ -18,7 +18,7 @@ $workshops = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body>
 
-<form action="../../backend/blog/EquityWorkshopGenerator.php" method="post">
+<form action="../../backend/generators/EquityWorkshopGenerator.php" method="post">
     <div>
         <label for="titre">Titre</label>
         <input type="text" name="titre" required>

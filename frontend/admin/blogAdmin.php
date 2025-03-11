@@ -24,7 +24,7 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <h3 class="text-2xl font-bold text-violet">Gestion du Blog</h3>
     <div class="bg-white p-5 rounded-lg shadow mt-5">
         <h4 class="text-xl font-bold">Créer un post</h4>
-        <form action="../../backend/blog/PostGenerator.php" method="post" class="mt-3">
+        <form action="../../backend/generators/PostGenerator.php" method="post" class="mt-3">
             <label class="block text-darkgray">Titre</label>
             <input name="titre" type="text" required class="w-full p-2 border border-gray-300 rounded mt-1">
             <label class="block text-darkgray mt-3">Contenu</label>
