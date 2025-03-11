@@ -17,6 +17,14 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Blog - Admin</title>
+    <script>
+        function toggleEdit(postId) {
+            let inputs = document.querySelectorAll('#post-' + postId + ' .editable');
+            inputs.forEach(function(input) {
+                input.disabled = !input.disabled;
+            });
+        }
+    </script>
 </head>
 <body>
 <!-- Section Blog -->
@@ -37,12 +45,17 @@ $posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
 <div class="posts">
     <?php foreach ($posts as $post): ?>
     <div class="post">
-        <p><?php echo $post["titre"] ?></p>
-        <p><?php echo $post["contenu"] ?></p>
-        <p><?php echo $post["date_publie"] ?></p>
-        <button>Modifier</button>
-        <button>Supprimer</button>
+        <form action="../../backend/edit/EditPost.php" method="post" id="post-<?php echo $post['id']; ?>">
+            <input type="hidden" name="post_id" value="<?php echo $post['id']; ?>">
+            <input class="editable" name="titre" disabled value="<?php echo $post["titre"] ?>">
+            <input class="editable" disabled name="contenu" value="<?php echo $post["contenu"] ?>">
+            <p><?php echo $post["date_publie"] ?></p>
+            <input type="submit" class="editable" disabled value="envoyer">
+        </form>
+        <button onclick="toggleEdit(<?php echo $post["id"]?>)">Modifier</button>
+        <a href="../../backend/delete/DeletePost.php?id=<?php echo $post["id"]; ?>">Supprimer</a>
     </div>
+    <br>
     <?php endforeach; ?>
 </div>
 
