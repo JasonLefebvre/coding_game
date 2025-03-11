@@ -212,7 +212,6 @@ function formatEventType($type) {
                                     <p><span class="font-medium">Email :</span> <?= htmlspecialchars($email) ?></p>
                                     <p><span class="font-medium">Téléphone :</span> <?= htmlspecialchars($telephone) ?></p>
                                     <p><span class="font-medium">Date d'inscription :</span> <?= htmlspecialchars($date_inscription) ?></p>
-                                    <p><span class="font-medium">Compte vérifié :</span> <?= $is_verified ?></p>
                                 </div>
                             </div>
                         </div>
@@ -226,8 +225,6 @@ function formatEventType($type) {
                 <?php foreach ($prochaines_sessions as $session): ?>
                     <li class="bg-gray-100 p-4 rounded-md">
                         <strong><?= htmlspecialchars($session['titre']); ?></strong>
-                        <br>
-                        <span class="text-gray-700">Date :</span> <?= date("d/m/Y", strtotime($session['date_event'])); ?>
                         <br>
                         <span class="text-gray-700">Type :</span> <?= htmlspecialchars($session['event_type']); ?>
                     </li>
@@ -244,8 +241,6 @@ function formatEventType($type) {
                 <?php foreach ($historique_sessions as $session): ?>
                     <li class="bg-gray-100 p-4 rounded-md">
                         <strong><?= htmlspecialchars($session['titre']); ?></strong>
-                        <br>
-                        <span class="text-gray-700">Date :</span> <?= date("d/m/Y", strtotime($session['date_event'])); ?>
                         <br>
                         <span class="text-gray-700">Type :</span> <?= htmlspecialchars($session['event_type']); ?>
                     </li>

@@ -301,7 +301,7 @@ $query_future = "SELECT id, titre, description, categorie
     </nav>
 
     <!-- Hero Section -->
-    <div class="hero-pattern flex items-center">
+    <div class="hero-pattern bg-violet flex items-center">
         <div class="diagonal-line-left"></div>
         <div class="diagonal-line-right"></div>
         <div class="curved-line-bottom"></div>
